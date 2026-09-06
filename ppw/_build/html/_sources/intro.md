@@ -1,11 +1,15 @@
-# Welcome to your Jupyter Book
+# Welcome to My Jupyter Book Matakuliah PPW
 
-This is a small sample book to give you a feel for how book content is
-structured.
-It shows off a few of the major file types, as well as some sample content.
-It does not go in-depth into any particular topic - check out [the Jupyter Book documentation](https://jupyterbook.org) for more information.
+Nama: Achmad Fauzan Alif Fitrah
 
-Check out the content pages bundled with this sample book to see more.
+NIM : 230411100145
 
-```{tableofcontents}
-```
+Prodi : Teknik Informatika
+
+Univ : Universitas Trunojoyo Madura
+
+Email : fznfitrah@gmail.com
+
+No Hand : 085924854545
+
+Semoga materi yang ada pada web statis ini akan bermanfaat bagi yang membutuhkannya di masa depan, entah untuk diri saya sendiri atau bagi orang lain yang membacanya. Jika ada diskusi atau pertanyaan yang terkait pada materi yang sudah saya tulis di sini bisa disampaikan melalui email saya fznfitrah@gmail.com. Sekian perkenalan dari saya kurang lebihnya mohon maaf🙏🙏
