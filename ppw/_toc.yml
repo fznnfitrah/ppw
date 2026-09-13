@@ -4,5 +4,7 @@
 format: jb-book
 root: intro
 chapters:
-- file: scraping-data
-  title: Scraping Data
+  - file: scraping-data
+    title: Scraping Data Berita
+  - file: prepering-data
+    title: Prepering Data Berita
