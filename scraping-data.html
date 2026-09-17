@@ -377,12 +377,15 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alat">Alat</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fungsi-mendapatkan-url-dalam-website-detik-com">Fungsi mendapatkan URL dalam Website Detik.com</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fungsi-untuk-mengekstrak-kata-dalam-berita-yang-sudah-di-scarping">Fungsi untuk mengekstrak kata dalam Berita yang sudah di scarping</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alat-dan-library">Alat dan Library</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fungsi-mendapatkan-url-dari-website-detik-com">Fungsi Mendapatkan URL dari Website Detik.com</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fungsi-untuk-mengekstrak-teks-berita-yang-sudah-di-scraping">Fungsi untuk Mengekstrak Teks Berita yang Sudah Di-scraping</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-understanding"><strong>Data Understanding</strong></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-understanding"><strong>Data Understanding</strong></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batasan-dan-reproducibility">Batasan dan Reproducibility</a></li>
+</ul>
+</li>
 </ul>
             </nav>
         </div>
@@ -396,22 +399,28 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="teknik-scraping-website">
 <h1><strong>Teknik Scraping Website</strong><a class="headerlink" href="#teknik-scraping-website" title="Link to this heading">#</a></h1>
-<section id="alat">
-<h2>Alat<a class="headerlink" href="#alat" title="Link to this heading">#</a></h2>
-<p>Berikut ini adalah library yang dibutuhkan untuk mengambil data berita pada <a class="reference external" href="http://detik.com">detik.com</a></p>
+<section id="alat-dan-library">
+<h2>Alat dan Library<a class="headerlink" href="#alat-dan-library" title="Link to this heading">#</a></h2>
+<p>Berikut adalah library yang digunakan untuk mengambil dan mengolah data berita dari <a class="reference external" href="http://Detik.com">Detik.com</a>:</p>
 <ol class="arabic simple">
 <li><p>requests</p></li>
-<li><p>beautifulSoap</p></li>
+<li><p>BeautifulSoup4</p></li>
 <li><p>trafilatura</p></li>
 <li><p>pandas</p></li>
+<li><p>tqdm</p></li>
+<li><p>time</p></li>
 </ol>
-<p>Proyek ini berfokus pada teknik ekstraksi data (web scraping) untuk membangun dataset teks berbahasa Indonesia dari portal berita daring. Melalui proses otomatisasi, ribuan tautan dari kategori spesifik dikumpulkan secara terstruktur. Data mentah yang dihasilkan difilter dari elemen visual pengganggu (seperti iklan dan menu navigasi) untuk mendapatkan murni teks artikel. Dataset akhir yang tersimpan dalam format tabular CSV ini sangat ideal untuk mempermudah tahap prapemrosesan teks, seperti tokenization dan ekstraksi fitur, sebelum digunakan lebih lanjut dalam pengembangan model klasifikasi teks.</p>
-<p>Peran Masing-Masing Alat</p>
+<p>Proyek ini berfokus pada teknik ekstraksi data (web scraping) untuk membangun dataset teks berbahasa Indonesia dari portal berita daring. Proses otomatis mengumpulkan hingga 100 URL artikel dari masing-masing kategori sport dan finance, sehingga target keseluruhan adalah 200 URL. URL duplikat serta tautan yang mengarah ke konten foto dan video tidak disertakan.</p>
+<p>Konten artikel kemudian diunduh dan diekstrak menggunakan Trafilatura. Hasil ekstraksi merupakan teks utama artikel yang telah dipisahkan dari sebagian besar boilerplate HTML, seperti menu navigasi dan elemen halaman lainnya. Karena proses pengunduhan atau ekstraksi dapat gagal, jumlah baris akhir CSV perlu diverifikasi dan tidak selalu sama dengan jumlah URL target.</p>
+<p>Dataset akhir disimpan dalam format CSV dan dapat digunakan untuk tahap prapemrosesan teks, pembentukan fitur, serta klasifikasi topik berita berdasarkan kategori sport dan finance.</p>
+<p><strong>Peran Masing-Masing Alat</strong></p>
 <ul class="simple">
 <li><p>Requests: Menangani komunikasi klien-server (HTTP/HTTPS) untuk mengunduh dokumen HTML secara mentah.</p></li>
-<li><p>BeautifulSoup4: Membedah struktur HTML untuk mengisolasi dan mengumpulkan tautan berita yang relevan berdasarkan penyeleksi CSS.</p></li>
-<li><p>Trafilatura: Algoritma ekstraksi cerdas yang memisahkan teks utama artikel dari elemen non-konten (HTML boilerplate).</p></li>
-<li><p>Pandas: Mengonversi kumpulan teks dan URL yang terisolasi menjadi struktur tabel (kolom dan baris) standar industri untuk diekspor menjadi file CSV.</p></li>
+<li><p>BeautifulSoup4: Menganalisis struktur HTML dan menemukan elemen <code class="docutils literal notranslate"><span class="pre">&lt;article&gt;</span></code>, atribut <code class="docutils literal notranslate"><span class="pre">i-link</span></code>, atau tautan <code class="docutils literal notranslate"><span class="pre">&lt;a&gt;</span></code> yang berisi URL artikel.</p></li>
+<li><p>Trafilatura: Mengekstrak teks utama artikel dari dokumen HTML dan mengurangi elemen non-konten (HTML boilerplate).</p></li>
+<li><p>Pandas: Mengonversi kumpulan kategori, teks, dan URL menjadi tabel untuk diekspor ke file CSV.</p></li>
+<li><p>tqdm: Menampilkan progress bar selama pengumpulan URL dan ekstraksi teks.</p></li>
+<li><p>time: Memberikan jeda antar-request agar proses pengambilan data tidak dilakukan secara berturut-turut tanpa jeda.</p></li>
 </ul>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -425,8 +434,8 @@ document.write(`
 </div>
 </div>
 </div>
-<section id="fungsi-mendapatkan-url-dalam-website-detik-com">
-<h3>Fungsi mendapatkan URL dalam Website <a class="reference external" href="http://Detik.com">Detik.com</a><a class="headerlink" href="#fungsi-mendapatkan-url-dalam-website-detik-com" title="Link to this heading">#</a></h3>
+<section id="fungsi-mendapatkan-url-dari-website-detik-com">
+<h3>Fungsi Mendapatkan URL dari Website <a class="reference external" href="http://Detik.com">Detik.com</a><a class="headerlink" href="#fungsi-mendapatkan-url-dari-website-detik-com" title="Link to this heading">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">dapatkan_url_detik</span><span class="p">(</span><span class="n">url_dasar</span><span class="p">,</span> <span class="n">target_jumlah</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
@@ -496,8 +505,8 @@ document.write(`
 </div>
 </div>
 </section>
-<section id="fungsi-untuk-mengekstrak-kata-dalam-berita-yang-sudah-di-scarping">
-<h3>Fungsi untuk mengekstrak kata dalam Berita yang sudah di scarping<a class="headerlink" href="#fungsi-untuk-mengekstrak-kata-dalam-berita-yang-sudah-di-scarping" title="Link to this heading">#</a></h3>
+<section id="fungsi-untuk-mengekstrak-teks-berita-yang-sudah-di-scraping">
+<h3>Fungsi untuk Mengekstrak Teks Berita yang Sudah Di-scraping<a class="headerlink" href="#fungsi-untuk-mengekstrak-teks-berita-yang-sudah-di-scraping" title="Link to this heading">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">ekstrak_teks_trafilatura</span><span class="p">(</span><span class="n">url_list</span><span class="p">,</span> <span class="n">kategori</span><span class="p">):</span>
@@ -541,61 +550,219 @@ document.write(`
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Mulai mencari di: https://sport.detik.com/
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Mengumpulkan URL:   0%|                                                                                                                                 | 0/100 [00:00&lt;?, ?it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Mengumpulkan URL:   0%|                                                                                                                                    | 0/100 [00:00&lt;?, ?it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Mengumpulkan URL:   1%|█▏                                                                                                                       | 1/100 [00:00&lt;00:53,  1.86it/s]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Mengumpulkan URL:  21%|█████████████████████████▏                                                                                              | 21/100 [00:02&lt;00:07, 11.01it/s]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Mengumpulkan URL:  40%|████████████████████████████████████████████████                                                                        | 40/100 [00:03&lt;00:04, 12.08it/s]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Mengumpulkan URL:  60%|████████████████████████████████████████████████████████████████████████                                                | 60/100 [00:05&lt;00:03, 12.55it/s]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Mengumpulkan URL:  80%|████████████████████████████████████████████████████████████████████████████████████████████████                        | 80/100 [00:06&lt;00:01, 13.17it/s]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Mengumpulkan URL:  99%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████▊ | 99/100 [00:07&lt;00:00, 12.99it/s]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Mengumpulkan URL: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 100/100 [00:08&lt;00:00, 11.20it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Mengumpulkan URL:   0%|                                                                                                                                    | 0/100 [00:15&lt;?, ?it/s]
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Mulai mencari di: https://finance.detik.com/
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[Error] Gagal mengakses https://sport.detik.com/indeks?page=1: HTTPSConnectionPool(host='sport.detik.com', port=443): Read timed out. (read timeout=15)
+Mulai mencari di: https://finance.detik.com/
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Mengumpulkan URL:   0%|                                                                                                                                 | 0/100 [00:00&lt;?, ?it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Mengumpulkan URL:   0%|                                                                                                                                    | 0/100 [00:00&lt;?, ?it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Mengumpulkan URL:   1%|█▏                                                                                                                       | 1/100 [00:00&lt;00:51,  1.92it/s]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Mengumpulkan URL:  21%|█████████████████████████▏                                                                                              | 21/100 [00:02&lt;00:07, 11.09it/s]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Mengumpulkan URL:  38%|█████████████████████████████████████████████▌                                                                          | 38/100 [00:03&lt;00:05, 11.21it/s]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Mengumpulkan URL:  56%|███████████████████████████████████████████████████████████████████▏                                                    | 56/100 [00:05&lt;00:03, 11.64it/s]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Mengumpulkan URL:  75%|██████████████████████████████████████████████████████████████████████████████████████████                              | 75/100 [00:06&lt;00:01, 12.64it/s]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Mengumpulkan URL:  93%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████▌        | 93/100 [00:07&lt;00:00, 12.55it/s]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Mengumpulkan URL: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 100/100 [00:08&lt;00:00, 11.41it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Mengumpulkan URL:   0%|                                                                                                                                    | 0/100 [00:14&lt;?, ?it/s]
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">line</span> <span class="mi">2</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">url_sport</span> <span class="o">=</span> <span class="n">dapatkan_url_detik</span><span class="p">(</span><span class="n">url_tema_sport</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">url_finance</span> <span class="o">=</span> <span class="n">dapatkan_url_detik</span><span class="p">(</span><span class="n">url_tema_finance</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+
+<span class="nn">Cell In[2], line 19,</span> in <span class="ni">dapatkan_url_detik</span><span class="nt">(url_dasar, target_jumlah)</span>
+<span class="g g-Whitespace">     </span><span class="mi">14</span> <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+<span class="g g-Whitespace">     </span><span class="mi">15</span>     <span class="s1">'User-Agent'</span><span class="p">:</span> <span class="s1">'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36'</span>
+<span class="g g-Whitespace">     </span><span class="mi">16</span> <span class="p">}</span>
+<span class="g g-Whitespace">     </span><span class="mi">18</span> <span class="k">try</span><span class="p">:</span>
+<span class="ne">---&gt; </span><span class="mi">19</span>     <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url_indeks</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">21</span>     <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+<span class="g g-Whitespace">     </span><span class="mi">22</span>         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">[Peringatan] Server menolak akses di </span><span class="si">{</span><span class="n">url_indeks</span><span class="si">}</span><span class="s2"> (Status: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2">)."</span><span class="p">)</span>
+
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/site-packages/requests/api.py:87,</span> in <span class="ni">get</span><span class="nt">(url, params, **kwargs)</span>
+<span class="g g-Whitespace">     </span><span class="mi">74</span> <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span>
+<span class="g g-Whitespace">     </span><span class="mi">75</span>     <span class="n">url</span><span class="p">:</span> <span class="n">_t</span><span class="o">.</span><span class="n">UriType</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">_t</span><span class="o">.</span><span class="n">ParamsType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Unpack</span><span class="p">[</span><span class="n">_t</span><span class="o">.</span><span class="n">GetKwargs</span><span class="p">]</span>
+<span class="g g-Whitespace">     </span><span class="mi">76</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+<span class="g g-Whitespace">     </span><span class="mi">77</span><span class="w">     </span><span class="sa">r</span><span class="sd">"""Sends a GET request.</span>
+<span class="g g-Whitespace">     </span><span class="mi">78</span><span class="sd"> </span>
+<span class="g g-Whitespace">     </span><span class="mi">79</span><span class="sd">     :param url: URL for the new :class:`Request` object.</span>
+<span class="sd">   (...)</span>
+<span class="g g-Whitespace">     </span><span class="mi">84</span><span class="sd">     :rtype: requests.Response</span>
+<span class="g g-Whitespace">     </span><span class="mi">85</span><span class="sd">     """</span>
+<span class="ne">---&gt; </span><span class="mi">87</span>     <span class="k">return</span> <span class="n">request</span><span class="p">(</span><span class="s2">"get"</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/site-packages/requests/api.py:71,</span> in <span class="ni">request</span><span class="nt">(method, url, **kwargs)</span>
+<span class="g g-Whitespace">     </span><span class="mi">67</span> <span class="c1"># By using the 'with' statement we are sure the session is closed, thus we</span>
+<span class="g g-Whitespace">     </span><span class="mi">68</span> <span class="c1"># avoid leaving sockets open which can trigger a ResourceWarning in some</span>
+<span class="g g-Whitespace">     </span><span class="mi">69</span> <span class="c1"># cases, and look like a memory leak in others.</span>
+<span class="g g-Whitespace">     </span><span class="mi">70</span> <span class="k">with</span> <span class="n">sessions</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+<span class="ne">---&gt; </span><span class="mi">71</span>     <span class="k">return</span> <span class="n">session</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/site-packages/requests/sessions.py:651,</span> in <span class="ni">Session.request</span><span class="nt">(self, method, url, params, data, headers, cookies, files, auth, timeout, allow_redirects, proxies, hooks, stream, verify, cert, json)</span>
+<span class="g g-Whitespace">    </span><span class="mi">646</span> <span class="n">send_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+<span class="g g-Whitespace">    </span><span class="mi">647</span>     <span class="s2">"timeout"</span><span class="p">:</span> <span class="n">timeout</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">648</span>     <span class="s2">"allow_redirects"</span><span class="p">:</span> <span class="n">allow_redirects</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">649</span> <span class="p">}</span>
+<span class="g g-Whitespace">    </span><span class="mi">650</span> <span class="n">send_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">651</span> <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">prep</span><span class="p">,</span> <span class="o">**</span><span class="n">send_kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">653</span> <span class="k">return</span> <span class="n">resp</span>
+
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/site-packages/requests/sessions.py:784,</span> in <span class="ni">Session.send</span><span class="nt">(self, request, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">781</span> <span class="n">start</span> <span class="o">=</span> <span class="n">preferred_clock</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">783</span> <span class="c1"># Send the request</span>
+<span class="ne">--&gt; </span><span class="mi">784</span> <span class="n">r</span> <span class="o">=</span> <span class="n">adapter</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">786</span> <span class="c1"># Total elapsed time of the request (approximately)</span>
+<span class="g g-Whitespace">    </span><span class="mi">787</span> <span class="n">elapsed</span> <span class="o">=</span> <span class="n">preferred_clock</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/site-packages/requests/adapters.py:696,</span> in <span class="ni">HTTPAdapter.send</span><span class="nt">(self, request, stream, timeout, verify, cert, proxies)</span>
+<span class="g g-Whitespace">    </span><span class="mi">693</span>     <span class="n">resolved_timeout</span> <span class="o">=</span> <span class="n">TimeoutSauce</span><span class="p">(</span><span class="n">connect</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">read</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">695</span> <span class="k">try</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">696</span>     <span class="n">resp</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">697</span>         <span class="n">method</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">method</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">698</span>         <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">699</span>         <span class="n">body</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="p">,</span>  <span class="c1"># type: ignore[arg-type]  # urllib3 stubs don't accept Iterable[bytes | str]</span>
+<span class="g g-Whitespace">    </span><span class="mi">700</span>         <span class="n">headers</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="p">,</span>  <span class="c1"># type: ignore[arg-type]  # urllib3#3072</span>
+<span class="g g-Whitespace">    </span><span class="mi">701</span>         <span class="n">redirect</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">702</span>         <span class="n">assert_same_host</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">703</span>         <span class="n">preload_content</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">704</span>         <span class="n">decode_content</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">705</span>         <span class="n">retries</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_retries</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">706</span>         <span class="n">timeout</span><span class="o">=</span><span class="n">resolved_timeout</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">707</span>         <span class="n">chunked</span><span class="o">=</span><span class="n">chunked</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">708</span>     <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">710</span> <span class="k">except</span> <span class="p">(</span><span class="n">ProtocolError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">711</span>     <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">)</span>
+
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/site-packages/urllib3/connectionpool.py:788,</span> in <span class="ni">HTTPConnectionPool.urlopen</span><span class="nt">(self, method, url, body, headers, retries, redirect, assert_same_host, timeout, pool_timeout, release_conn, chunked, body_pos, preload_content, decode_content, **response_kw)</span>
+<span class="g g-Whitespace">    </span><span class="mi">785</span> <span class="n">response_conn</span> <span class="o">=</span> <span class="n">conn</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">release_conn</span> <span class="k">else</span> <span class="kc">None</span>
+<span class="g g-Whitespace">    </span><span class="mi">787</span> <span class="c1"># Make the request on the HTTPConnection object</span>
+<span class="ne">--&gt; </span><span class="mi">788</span> <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_request</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">789</span>     <span class="n">conn</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">790</span>     <span class="n">method</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">791</span>     <span class="n">url</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">792</span>     <span class="n">timeout</span><span class="o">=</span><span class="n">timeout_obj</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">793</span>     <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">794</span>     <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">795</span>     <span class="n">chunked</span><span class="o">=</span><span class="n">chunked</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">796</span>     <span class="n">retries</span><span class="o">=</span><span class="n">retries</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">797</span>     <span class="n">response_conn</span><span class="o">=</span><span class="n">response_conn</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">798</span>     <span class="n">preload_content</span><span class="o">=</span><span class="n">preload_content</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">799</span>     <span class="n">decode_content</span><span class="o">=</span><span class="n">decode_content</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">800</span>     <span class="o">**</span><span class="n">response_kw</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">801</span> <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">803</span> <span class="c1"># Everything went great!</span>
+<span class="g g-Whitespace">    </span><span class="mi">804</span> <span class="n">clean_exit</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/site-packages/urllib3/connectionpool.py:464,</span> in <span class="ni">HTTPConnectionPool._make_request</span><span class="nt">(self, conn, method, url, body, headers, retries, timeout, chunked, response_conn, preload_content, decode_content, enforce_content_length)</span>
+<span class="g g-Whitespace">    </span><span class="mi">461</span> <span class="k">try</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">462</span>     <span class="c1"># Trigger any extra validation we need to do.</span>
+<span class="g g-Whitespace">    </span><span class="mi">463</span>     <span class="k">try</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">464</span>         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_conn</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">465</span>     <span class="k">except</span> <span class="p">(</span><span class="n">SocketTimeout</span><span class="p">,</span> <span class="n">BaseSSLError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">466</span>         <span class="bp">self</span><span class="o">.</span><span class="n">_raise_timeout</span><span class="p">(</span><span class="n">err</span><span class="o">=</span><span class="n">e</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">timeout_value</span><span class="o">=</span><span class="n">conn</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
+
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/site-packages/urllib3/connectionpool.py:1106,</span> in <span class="ni">HTTPSConnectionPool._validate_conn</span><span class="nt">(self, conn)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1104</span> <span class="c1"># Force connect early to allow us to validate the connection.</span>
+<span class="g g-Whitespace">   </span><span class="mi">1105</span> <span class="k">if</span> <span class="n">conn</span><span class="o">.</span><span class="n">is_closed</span><span class="p">:</span>
+<span class="ne">-&gt; </span><span class="mi">1106</span>     <span class="n">conn</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+<span class="g g-Whitespace">   </span><span class="mi">1108</span> <span class="c1"># TODO revise this, see https://github.com/urllib3/urllib3/issues/2791</span>
+<span class="g g-Whitespace">   </span><span class="mi">1109</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">conn</span><span class="o">.</span><span class="n">is_verified</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">conn</span><span class="o">.</span><span class="n">proxy_is_verified</span><span class="p">:</span>
+
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/site-packages/urllib3/connection.py:796,</span> in <span class="ni">HTTPSConnection.connect</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">    </span><span class="mi">793</span>     <span class="c1"># Remove trailing '.' from fqdn hostnames to allow certificate validation</span>
+<span class="g g-Whitespace">    </span><span class="mi">794</span>     <span class="n">server_hostname_rm_dot</span> <span class="o">=</span> <span class="n">server_hostname</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">"."</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">796</span>     <span class="n">sock_and_verified</span> <span class="o">=</span> <span class="n">_ssl_wrap_socket_and_match_hostname</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">797</span>         <span class="n">sock</span><span class="o">=</span><span class="n">sock</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">798</span>         <span class="n">cert_reqs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cert_reqs</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">799</span>         <span class="n">ssl_version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ssl_version</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">800</span>         <span class="n">ssl_minimum_version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ssl_minimum_version</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">801</span>         <span class="n">ssl_maximum_version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ssl_maximum_version</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">802</span>         <span class="n">ca_certs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ca_certs</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">803</span>         <span class="n">ca_cert_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ca_cert_dir</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">804</span>         <span class="n">ca_cert_data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ca_cert_data</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">805</span>         <span class="n">cert_file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cert_file</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">806</span>         <span class="n">key_file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key_file</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">807</span>         <span class="n">key_password</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">key_password</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">808</span>         <span class="n">server_hostname</span><span class="o">=</span><span class="n">server_hostname_rm_dot</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">809</span>         <span class="n">ssl_context</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ssl_context</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">810</span>         <span class="n">tls_in_tls</span><span class="o">=</span><span class="n">tls_in_tls</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">811</span>         <span class="n">assert_hostname</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">assert_hostname</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">812</span>         <span class="n">assert_fingerprint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">assert_fingerprint</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">813</span>     <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">814</span>     <span class="bp">self</span><span class="o">.</span><span class="n">sock</span> <span class="o">=</span> <span class="n">sock_and_verified</span><span class="o">.</span><span class="n">socket</span>
+<span class="g g-Whitespace">    </span><span class="mi">816</span> <span class="c1"># If an error occurs during connection/handshake we may need to release</span>
+<span class="g g-Whitespace">    </span><span class="mi">817</span> <span class="c1"># our lock so another connection can probe the origin.</span>
+
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/site-packages/urllib3/connection.py:975,</span> in <span class="ni">_ssl_wrap_socket_and_match_hostname</span><span class="nt">(sock, cert_reqs, ssl_version, ssl_minimum_version, ssl_maximum_version, cert_file, key_file, key_password, ca_certs, ca_cert_dir, ca_cert_data, assert_hostname, assert_fingerprint, server_hostname, ssl_context, tls_in_tls)</span>
+<span class="g g-Whitespace">    </span><span class="mi">972</span>     <span class="k">if</span> <span class="n">is_ipaddress</span><span class="p">(</span><span class="n">normalized</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">973</span>         <span class="n">server_hostname</span> <span class="o">=</span> <span class="n">normalized</span>
+<span class="ne">--&gt; </span><span class="mi">975</span> <span class="n">ssl_sock</span> <span class="o">=</span> <span class="n">ssl_wrap_socket</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">976</span>     <span class="n">sock</span><span class="o">=</span><span class="n">sock</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">977</span>     <span class="n">keyfile</span><span class="o">=</span><span class="n">key_file</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">978</span>     <span class="n">certfile</span><span class="o">=</span><span class="n">cert_file</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">979</span>     <span class="n">key_password</span><span class="o">=</span><span class="n">key_password</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">980</span>     <span class="n">ca_certs</span><span class="o">=</span><span class="n">ca_certs</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">981</span>     <span class="n">ca_cert_dir</span><span class="o">=</span><span class="n">ca_cert_dir</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">982</span>     <span class="n">ca_cert_data</span><span class="o">=</span><span class="n">ca_cert_data</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">983</span>     <span class="n">server_hostname</span><span class="o">=</span><span class="n">server_hostname</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">984</span>     <span class="n">ssl_context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">985</span>     <span class="n">tls_in_tls</span><span class="o">=</span><span class="n">tls_in_tls</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">986</span> <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">988</span> <span class="k">try</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">989</span>     <span class="k">if</span> <span class="n">assert_fingerprint</span><span class="p">:</span>
+
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/site-packages/urllib3/util/ssl_.py:433,</span> in <span class="ni">ssl_wrap_socket</span><span class="nt">(sock, keyfile, certfile, cert_reqs, ca_certs, server_hostname, ssl_version, ciphers, ssl_context, ca_cert_dir, key_password, ca_cert_data, tls_in_tls)</span>
+<span class="g g-Whitespace">    </span><span class="mi">429</span>         <span class="n">context</span><span class="o">.</span><span class="n">load_cert_chain</span><span class="p">(</span><span class="n">certfile</span><span class="p">,</span> <span class="n">keyfile</span><span class="p">,</span> <span class="n">key_password</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">431</span> <span class="n">context</span><span class="o">.</span><span class="n">set_alpn_protocols</span><span class="p">(</span><span class="n">ALPN_PROTOCOLS</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">433</span> <span class="n">ssl_sock</span> <span class="o">=</span> <span class="n">_ssl_wrap_socket_impl</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">tls_in_tls</span><span class="p">,</span> <span class="n">server_hostname</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">434</span> <span class="k">return</span> <span class="n">ssl_sock</span>
+
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/site-packages/urllib3/util/ssl_.py:477,</span> in <span class="ni">_ssl_wrap_socket_impl</span><span class="nt">(sock, ssl_context, tls_in_tls, server_hostname)</span>
+<span class="g g-Whitespace">    </span><span class="mi">474</span>     <span class="n">SSLTransport</span><span class="o">.</span><span class="n">_validate_ssl_context_for_tls_in_tls</span><span class="p">(</span><span class="n">ssl_context</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">475</span>     <span class="k">return</span> <span class="n">SSLTransport</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">ssl_context</span><span class="p">,</span> <span class="n">server_hostname</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">477</span> <span class="k">return</span> <span class="n">ssl_context</span><span class="o">.</span><span class="n">wrap_socket</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">server_hostname</span><span class="o">=</span><span class="n">server_hostname</span><span class="p">)</span>
+
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/ssl.py:513,</span> in <span class="ni">SSLContext.wrap_socket</span><span class="nt">(self, sock, server_side, do_handshake_on_connect, suppress_ragged_eofs, server_hostname, session)</span>
+<span class="g g-Whitespace">    </span><span class="mi">507</span> <span class="k">def</span><span class="w"> </span><span class="nf">wrap_socket</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sock</span><span class="p">,</span> <span class="n">server_side</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">508</span>                 <span class="n">do_handshake_on_connect</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">509</span>                 <span class="n">suppress_ragged_eofs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">510</span>                 <span class="n">server_hostname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">511</span>     <span class="c1"># SSLSocket class handles server_hostname encoding before it calls</span>
+<span class="g g-Whitespace">    </span><span class="mi">512</span>     <span class="c1"># ctx._wrap_socket()</span>
+<span class="ne">--&gt; </span><span class="mi">513</span>     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sslsocket_class</span><span class="o">.</span><span class="n">_create</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">514</span>         <span class="n">sock</span><span class="o">=</span><span class="n">sock</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">515</span>         <span class="n">server_side</span><span class="o">=</span><span class="n">server_side</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">516</span>         <span class="n">do_handshake_on_connect</span><span class="o">=</span><span class="n">do_handshake_on_connect</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">517</span>         <span class="n">suppress_ragged_eofs</span><span class="o">=</span><span class="n">suppress_ragged_eofs</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">518</span>         <span class="n">server_hostname</span><span class="o">=</span><span class="n">server_hostname</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">519</span>         <span class="n">context</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">520</span>         <span class="n">session</span><span class="o">=</span><span class="n">session</span>
+<span class="g g-Whitespace">    </span><span class="mi">521</span>     <span class="p">)</span>
+
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/ssl.py:1104,</span> in <span class="ni">SSLSocket._create</span><span class="nt">(cls, sock, server_side, do_handshake_on_connect, suppress_ragged_eofs, server_hostname, context, session)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1101</span>         <span class="k">if</span> <span class="n">timeout</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">1102</span>             <span class="c1"># non-blocking</span>
+<span class="g g-Whitespace">   </span><span class="mi">1103</span>             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"do_handshake_on_connect should not be specified for non-blocking sockets"</span><span class="p">)</span>
+<span class="ne">-&gt; </span><span class="mi">1104</span>         <span class="bp">self</span><span class="o">.</span><span class="n">do_handshake</span><span class="p">()</span>
+<span class="g g-Whitespace">   </span><span class="mi">1105</span> <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+<span class="g g-Whitespace">   </span><span class="mi">1106</span>     <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/ssl.py:1375,</span> in <span class="ni">SSLSocket.do_handshake</span><span class="nt">(self, block)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1373</span>     <span class="k">if</span> <span class="n">timeout</span> <span class="o">==</span> <span class="mf">0.0</span> <span class="ow">and</span> <span class="n">block</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">1374</span>         <span class="bp">self</span><span class="o">.</span><span class="n">settimeout</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+<span class="ne">-&gt; </span><span class="mi">1375</span>     <span class="bp">self</span><span class="o">.</span><span class="n">_sslobj</span><span class="o">.</span><span class="n">do_handshake</span><span class="p">()</span>
+<span class="g g-Whitespace">   </span><span class="mi">1376</span> <span class="k">finally</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">1377</span>     <span class="bp">self</span><span class="o">.</span><span class="n">settimeout</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+
+<span class="ne">KeyboardInterrupt</span>: 
 </pre></div>
 </div>
 </div>
@@ -607,97 +774,19 @@ document.write(`
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Ekstraksi teks sport:   0%|                                                                                                                             | 0/100 [00:00&lt;?, ?it/s]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Ekstraksi teks sport:   1%|█▏                                                                                                                   | 1/100 [00:02&lt;03:22,  2.04s/it]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Ekstraksi teks sport:   2%|██▎                                                                                                                  | 2/100 [00:03&lt;03:08,  1.93s/it]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Ekstraksi teks sport:   3%|███▌                                                                                                                 | 3/100 [00:05&lt;03:00,  1.86s/it]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Ekstraksi teks sport:   4%|████▋                                                                                                                | 4/100 [00:07&lt;02:56,  1.83s/it]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Ekstraksi teks sport:   5%|█████▊                                                                                                               | 5/100 [00:09&lt;02:51,  1.81s/it]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Ekstraksi teks sport:   6%|███████                                                                                                              | 6/100 [00:11&lt;02:49,  1.80s/it]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Ekstraksi teks sport:   7%|████████▏                                                                                                            | 7/100 [00:12&lt;02:46,  1.79s/it]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Ekstraksi teks sport:   8%|█████████▎                                                                                                           | 8/100 [00:14&lt;02:44,  1.78s/it]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Ekstraksi teks sport:   9%|██████████▌                                                                                                          | 9/100 [00:16&lt;02:42,  1.79s/it]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Ekstraksi teks sport:  10%|███████████▌                                                                                                        | 10/100 [00:18&lt;02:40,  1.79s/it]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Ekstraksi teks sport:  11%|████████████▊                                                                                                       | 11/100 [00:19&lt;02:38,  1.78s/it]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Ekstraksi teks sport:  12%|█████████████▉                                                                                                      | 12/100 [00:21&lt;02:35,  1.77s/it]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Ekstraksi teks sport:  13%|███████████████                                                                                                     | 13/100 [00:23&lt;02:34,  1.78s/it]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Ekstraksi teks sport:  14%|████████████████▏                                                                                                   | 14/100 [00:25&lt;02:32,  1.77s/it]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Ekstraksi teks sport:  15%|█████████████████▍                                                                                                  | 15/100 [00:27&lt;02:34,  1.82s/it]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Ekstraksi teks sport:  16%|██████████████████▌                                                                                                 | 16/100 [00:28&lt;02:30,  1.79s/it]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Ekstraksi teks sport:  16%|██████████████████▌                                                                                                 | 16/100 [00:30&lt;02:37,  1.88s/it]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">data_sport</span> <span class="o">=</span> <span class="n">ekstrak_teks_trafilatura</span><span class="p">(</span><span class="n">url_sport</span><span class="p">,</span> <span class="s1">'sport'</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">data_finance</span> <span class="o">=</span> <span class="n">ekstrak_teks_trafilatura</span><span class="p">(</span><span class="n">url_finance</span><span class="p">,</span> <span class="s1">'finance'</span><span class="p">)</span>
-
-<span class="nn">Cell In[3], line 16,</span> in <span class="ni">ekstrak_teks_trafilatura</span><span class="nt">(url_list, kategori)</span>
-<span class="g g-Whitespace">     </span><span class="mi">10</span>         <span class="k">if</span> <span class="n">teks_bersih</span><span class="p">:</span>
-<span class="g g-Whitespace">     </span><span class="mi">11</span>             <span class="n">data_ekstrak</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
-<span class="g g-Whitespace">     </span><span class="mi">12</span>                 <span class="s1">'kategori'</span><span class="p">:</span> <span class="n">kategori</span><span class="p">,</span>
-<span class="g g-Whitespace">     </span><span class="mi">13</span>                 <span class="s1">'url'</span><span class="p">:</span> <span class="n">url</span><span class="p">,</span>
-<span class="g g-Whitespace">     </span><span class="mi">14</span>                 <span class="s1">'teks'</span><span class="p">:</span> <span class="n">teks_bersih</span>
-<span class="g g-Whitespace">     </span><span class="mi">15</span>             <span class="p">})</span>
-<span class="ne">---&gt; </span><span class="mi">16</span>     <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">1.5</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">18</span> <span class="k">return</span> <span class="n">data_ekstrak</span>
-
-<span class="ne">KeyboardInterrupt</span>: 
-</pre></div>
-</div>
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 4. Simpan ke CSV MASING-MASING TEMA SECARA TERPISAH</span>
-<span class="c1"># Menyimpan Dataset Sport</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Menyimpan Dataset Sport</span>
+<span class="c1"># Pastikan folder data/ sudah tersedia sebelum menjalankan sel ini.</span>
 <span class="n">df_sport</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data_sport</span><span class="p">)</span>
-<span class="n">nama_file_sport</span> <span class="o">=</span> <span class="s1">'dataset_detik_sport.csv'</span>
+<span class="n">nama_file_sport</span> <span class="o">=</span> <span class="s1">'data/dataset_detik_sport.csv'</span>
 <span class="n">df_sport</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">nama_file_sport</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Dataset Sport berhasil disimpan sebagai: </span><span class="si">{</span><span class="n">nama_file_sport</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
 <span class="c1"># Menyimpan Dataset Finance</span>
 <span class="n">df_finance</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data_finance</span><span class="p">)</span>
-<span class="n">nama_file_finance</span> <span class="o">=</span> <span class="s1">'dataset_detik_finance.csv'</span>
+<span class="n">nama_file_finance</span> <span class="o">=</span> <span class="s1">'data/dataset_detik_finance.csv'</span>
 <span class="n">df_finance</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">nama_file_finance</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Dataset Finance berhasil disimpan sebagai: </span><span class="si">{</span><span class="n">nama_file_finance</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 </pre></div>
@@ -708,17 +797,22 @@ document.write(`
 </section>
 <section id="data-understanding">
 <h2><strong>Data Understanding</strong><a class="headerlink" href="#data-understanding" title="Link to this heading">#</a></h2>
-<p>Proses web scraping telah berhasil dieksekusi secara otomatis dan mengumpulkan total 200 data artikel secara berimbang, yakni 100 artikel dari kategori Olahraga (Sport) dan 100 artikel dari kategori Keuangan (Finance). Data mentah tersebut kemudian diekstrak dan direstrukturisasi ke dalam format dataframe tabular dengan tiga atribut (kolom) utama:</p>
+<p>Target pengumpulan data terdiri atas 200 URL secara berimbang, yaitu hingga 100 URL dari kategori sport dan hingga 100 URL dari kategori finance. Jumlah artikel yang berhasil menjadi dataset akhir ditentukan setelah proses pengunduhan dan ekstraksi selesai, sehingga harus dikonfirmasi dari jumlah baris CSV.</p>
+<p>Data tersebut direstrukturisasi ke dalam dataframe tabular dengan tiga atribut (kolom) utama:</p>
 <ul class="simple">
-<li><p>Kategori: Berfungsi sebagai label kelas target dari artikel (sport atau finance).</p></li>
-<li><p>URL: Tautan referensi (hyperlink) asli untuk pelacakan sumber berita.</p></li>
-<li><p>Teks: Inti konten berita yang telah dibersihkan (clean text) dari elemen navigasi web, iklan, dan boilerplate HTML.</p></li>
+<li><p>Kategori: Berfungsi sebagai label kelas target untuk klasifikasi topik berita, yaitu <code class="docutils literal notranslate"><span class="pre">sport</span></code> atau <code class="docutils literal notranslate"><span class="pre">finance</span></code>.</p></li>
+<li><p>URL: Tautan referensi asli untuk pelacakan sumber berita.</p></li>
+<li><p>Teks: Teks utama artikel yang diekstrak secara otomatis oleh Trafilatura. Teks ini telah dikurangi dari sebagian elemen navigasi, iklan, dan boilerplate HTML, tetapi tetap perlu diperiksa kualitasnya.</p></li>
 </ul>
-<p>Keberhasilan ekstraksi teks bersih ini sangat krusial. Dengan struktur yang terstandarisasi, dataset kini berada dalam kondisi siap pakai untuk memasuki fase prapemrosesan lanjutan (text preprocessing). Data ini dapat langsung diproses melalui tahapan pembersihan simbol, tokenisasi, hingga ekstraksi fitur (seperti menggunakan 5-fold cross-validation) guna melatih model machine learning klasifikasi sentimen atau teks yang memanfaatkan arsitektur Transformer, seperti model bahasa IndoBERT.</p>
+<p>Dengan struktur yang terstandarisasi, dataset dapat memasuki fase prapemrosesan lanjutan (text preprocessing), seperti pembersihan simbol, tokenisasi, penghapusan stopword, stemming, dan ekstraksi fitur. Setelah itu, data dapat digunakan untuk melatih model machine learning klasifikasi topik berita dengan label <code class="docutils literal notranslate"><span class="pre">sport</span></code> dan <code class="docutils literal notranslate"><span class="pre">finance</span></code>. Evaluasi seperti 5-fold cross-validation dan penggunaan model Transformer, misalnya IndoBERT, dapat dilakukan pada tahap pemodelan berikutnya.</p>
+<section id="batasan-dan-reproducibility">
+<h3>Batasan dan Reproducibility<a class="headerlink" href="#batasan-dan-reproducibility" title="Link to this heading">#</a></h3>
+<p>Hasil scraping bergantung pada struktur HTML <a class="reference external" href="http://Detik.com">Detik.com</a>, ketersediaan halaman, serta waktu eksekusi notebook. Perubahan struktur situs dapat menyebabkan elemen <code class="docutils literal notranslate"><span class="pre">&lt;article&gt;</span></code> atau atribut <code class="docutils literal notranslate"><span class="pre">i-link</span></code> tidak lagi ditemukan. Selain itu, beberapa URL dapat gagal diunduh atau tidak menghasilkan teks dari Trafilatura.</p>
+<p>Untuk dokumentasi yang dapat direproduksi, catat tanggal pengambilan data, jumlah URL yang ditemukan pada setiap kategori, jumlah artikel yang berhasil diekstrak, serta lokasi penyimpanan CSV. Pengambilan data juga perlu dilakukan secara bertanggung jawab dengan memperhatikan kebijakan dan ketentuan situs sumber.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_sport</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">"dataset_detik_sport.csv"</span><span class="p">)</span>
-<span class="n">df_finance</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">"dataset_detik_finance.csv"</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_sport</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">"data/dataset_detik_sport.csv"</span><span class="p">)</span>
+<span class="n">df_finance</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">"data/dataset_detik_finance.csv"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -869,8 +963,23 @@ Tampilan 3 data teratas:
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Menggabungkan kedua dataset (100 sport + 100 finance = 200 data)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Menggabungkan kedua dataset hasil ekstraksi.</span>
 <span class="n">df_all</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">df_sport</span><span class="p">,</span> <span class="n">df_finance</span><span class="p">],</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"=== PEMERIKSAAN KUALITAS DATASET ==="</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Jumlah artikel sport   : </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">df_sport</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Jumlah artikel finance : </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">df_finance</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Jumlah artikel total   : </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">df_all</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Nilai kosong per kolom:"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">df_all</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">URL duplikat           : </span><span class="si">{</span><span class="n">df_all</span><span class="p">[</span><span class="s1">'url'</span><span class="p">]</span><span class="o">.</span><span class="n">duplicated</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Distribusi kategori:"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">df_all</span><span class="p">[</span><span class="s1">'kategori'</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">())</span>
 </pre></div>
 </div>
 </div>
@@ -1004,6 +1113,7 @@ Total kata UNIK (Vocab)    : 11,604 kata
 </div>
 </section>
 </section>
+</section>
 
     <script type="text/x-thebe-config">
     {
@@ -1069,12 +1179,15 @@ Total kata UNIK (Vocab)    : 11,604 kata
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alat">Alat</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fungsi-mendapatkan-url-dalam-website-detik-com">Fungsi mendapatkan URL dalam Website Detik.com</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fungsi-untuk-mengekstrak-kata-dalam-berita-yang-sudah-di-scarping">Fungsi untuk mengekstrak kata dalam Berita yang sudah di scarping</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alat-dan-library">Alat dan Library</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fungsi-mendapatkan-url-dari-website-detik-com">Fungsi Mendapatkan URL dari Website Detik.com</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#fungsi-untuk-mengekstrak-teks-berita-yang-sudah-di-scraping">Fungsi untuk Mengekstrak Teks Berita yang Sudah Di-scraping</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-understanding"><strong>Data Understanding</strong></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-understanding"><strong>Data Understanding</strong></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#batasan-dan-reproducibility">Batasan dan Reproducibility</a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

@@ -30,7 +30,7 @@ nbclient.exceptions.CellTimeoutError: A cell timed out while it was being execut
 The message was: Cell execution timed out.
 Here is a preview of the cell contents:
 -------------------
-data_sport = ekstrak_teks_trafilatura(url_sport, 'sport')
-data_finance = ekstrak_teks_trafilatura(url_finance, 'finance')
+url_sport = dapatkan_url_detik(url_tema_sport, 100)
+url_finance = dapatkan_url_detik(url_tema_finance, 100)
 -------------------
 
