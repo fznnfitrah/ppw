@@ -30,7 +30,10 @@ nbclient.exceptions.CellTimeoutError: A cell timed out while it was being execut
 The message was: Cell execution timed out.
 Here is a preview of the cell contents:
 -------------------
-data_sport = ekstrak_teks_trafilatura(url_sport, 'sport')
-data_finance = ekstrak_teks_trafilatura(url_finance, 'finance')
+# Preprocessing Penuh (Hapus Angka, Stopword, Stemming)
+print("1. Memulai Preprocessing Skenario 1 (Ini akan memakan waktu karena Stemming)...")
+df_all['token_skenario_1'] = df_all['teks'].progress_apply(
+    lambda x: preprocess_modular(x, hapus_angka=True, hapus_stopword=True, pakai_stemming=True)
+)
 -------------------
 

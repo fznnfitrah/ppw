@@ -62,6 +62,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'prepering-data';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Algoritma Word2Vec : Skip-Gram" href="word2vec.html" />
     <link rel="prev" title="Teknik Scraping Website" href="scraping-data.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -183,6 +184,7 @@
         <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="scraping-data.html">Scraping Data Berita</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Prepering Data Berita</a></li>
+<li class="toctree-l1"><a class="reference internal" href="word2vec.html">Word2Vec</a></li>
 </ul>
 
     </div>
@@ -386,6 +388,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pembuatan-tabel-4-principal-component-analysis-pca">Pembuatan Tabel 4: Principal Component Analysis (PCA)</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#download-dataset-dari-variable">Download dataset dari variable</a></li>
 </ul>
             </nav>
         </div>
@@ -563,6 +566,83 @@ Name: teks, Length: 200, dtype: int64
 </div>
 </div>
 </div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">cari_kata</span><span class="p">(</span><span class="n">keyword</span><span class="p">,</span> <span class="n">nama_kolom</span><span class="o">=</span><span class="s1">'teks'</span><span class="p">):</span>
+    <span class="c1"># Mencari kata di dalam kolom secara case-insensitive</span>
+    <span class="n">hasil_pencarian</span> <span class="o">=</span> <span class="n">df_all</span><span class="p">[</span><span class="n">df_all</span><span class="p">[</span><span class="n">nama_kolom</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">keyword</span><span class="p">,</span> <span class="n">case</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">na</span><span class="o">=</span><span class="kc">False</span><span class="p">)]</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Ditemukan </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">hasil_pencarian</span><span class="p">)</span><span class="si">}</span><span class="s2"> dokumen yang mengandung kata '</span><span class="si">{</span><span class="n">keyword</span><span class="si">}</span><span class="s2">'."</span><span class="p">)</span>
+    
+    <span class="c1"># Menampilkan hasil (Kategori dan teks terkait)</span>
+    <span class="k">return</span> <span class="n">hasil_pencarian</span><span class="p">[[</span><span class="s1">'kategori'</span><span class="p">,</span> <span class="n">nama_kolom</span><span class="p">]]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hasil</span> <span class="o">=</span> <span class="n">cari_kata</span><span class="p">(</span><span class="s2">"saham"</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">hasil</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Ditemukan 8 dokumen yang mengandung kata 'saham'.
+</pre></div>
+</div>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>kategori</th>
+      <th>teks</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>106</th>
+      <td>finance</td>
+      <td>Lembaga Penjamin Simpanan (LPS) memiliki dua f...</td>
+    </tr>
+    <tr>
+      <th>109</th>
+      <td>finance</td>
+      <td>Direktur Jenderal Stabilitas dan Pengembangan ...</td>
+    </tr>
+    <tr>
+      <th>146</th>
+      <td>finance</td>
+      <td>Founder &amp; Chairman CT Corp, Chairul Tanjung me...</td>
+    </tr>
+    <tr>
+      <th>148</th>
+      <td>finance</td>
+      <td>Pasangan selebriti yang juga pendiri RANS Ente...</td>
+    </tr>
+    <tr>
+      <th>193</th>
+      <td>finance</td>
+      <td>PT Bank Tabungan Negara (Persero) Tbk (BTN) me...</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
 </section>
 <section id="data-pre-processing">
 <h2><strong>Data Pre-Processing</strong><a class="headerlink" href="#data-pre-processing" title="Link to this heading">#</a></h2>
@@ -642,7 +722,7 @@ Name: teks, Length: 200, dtype: int64
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  0%|                                                                                                                                                      | 0/200 [00:00&lt;?, ?it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 200/200 [00:00&lt;00:00, 4751.33it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 200/200 [00:00&lt;00:00, 4984.29it/s]
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
@@ -664,7 +744,7 @@ Name: teks, Length: 200, dtype: int64
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  0%|                                                                                                                                                      | 0/200 [00:00&lt;?, ?it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 200/200 [00:00&lt;00:00, 2289.77it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 200/200 [00:00&lt;00:00, 2411.02it/s]
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
@@ -686,25 +766,25 @@ Name: teks, Length: 200, dtype: int64
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  0%|                                                                                                                                                      | 0/200 [00:00&lt;?, ?it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  1%|█▍                                                                                                                                            | 2/200 [00:03&lt;05:51,  1.77s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  1%|█▍                                                                                                                                            | 2/200 [00:03&lt;04:59,  1.51s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  2%|██▏                                                                                                                                           | 3/200 [00:07&lt;08:16,  2.52s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  2%|██▏                                                                                                                                           | 3/200 [00:06&lt;07:07,  2.17s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  2%|██▊                                                                                                                                           | 4/200 [00:12&lt;11:32,  3.53s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  2%|██▊                                                                                                                                           | 4/200 [00:11&lt;10:27,  3.20s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  2%|███▌                                                                                                                                          | 5/200 [00:13&lt;09:14,  2.84s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  2%|███▌                                                                                                                                          | 5/200 [00:12&lt;08:34,  2.64s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  3%|████▎                                                                                                                                         | 6/200 [00:17&lt;09:52,  3.05s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  3%|████▎                                                                                                                                         | 6/200 [00:15&lt;08:28,  2.62s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  4%|████▉                                                                                                                                         | 7/200 [00:24&lt;14:25,  4.48s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  4%|████▉                                                                                                                                         | 7/200 [00:22&lt;12:53,  4.01s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  4%|█████▋                                                                                                                                        | 8/200 [00:28&lt;13:36,  4.25s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  4%|█████▋                                                                                                                                        | 8/200 [00:26&lt;13:32,  4.23s/it]
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  4%|█████▋                                                                                                                                        | 8/200 [00:29&lt;11:59,  3.75s/it]
@@ -715,7 +795,7 @@ Name: teks, Length: 200, dtype: int64
 </div>
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">17</span><span class="p">],</span> <span class="n">line</span> <span class="mi">2</span>
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">19</span><span class="p">],</span> <span class="n">line</span> <span class="mi">2</span>
 <span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="nb">print</span><span class="p">(</span><span class="s2">"3. Melakukan normalisasi (Stemming Sastrawi). Mohon tunggu beberapa saat..."</span><span class="p">)</span>
 <span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">df_all</span><span class="p">[</span><span class="s1">'teks_final'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_all</span><span class="p">[</span><span class="s1">'teks_tanpa_stopword'</span><span class="p">]</span><span class="o">.</span><span class="n">progress_apply</span><span class="p">(</span><span class="n">normalisasi_teks</span><span class="p">)</span>
 
@@ -794,7 +874,7 @@ Name: teks, Length: 200, dtype: int64
 <span class="g g-Whitespace">    </span><span class="mi">917</span>     <span class="n">t</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">1</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">t</span><span class="o">.</span><span class="n">total</span> <span class="ow">or</span> <span class="n">t</span><span class="o">.</span><span class="n">n</span> <span class="o">&lt;</span> <span class="n">t</span><span class="o">.</span><span class="n">total</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
 <span class="ne">--&gt; </span><span class="mi">918</span>     <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-<span class="nn">Cell In[13], line 3,</span> in <span class="ni">normalisasi_teks</span><span class="nt">(teks)</span>
+<span class="nn">Cell In[15], line 3,</span> in <span class="ni">normalisasi_teks</span><span class="nt">(teks)</span>
 <span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="k">def</span><span class="w"> </span><span class="nf">normalisasi_teks</span><span class="p">(</span><span class="n">teks</span><span class="p">):</span>
 <span class="ne">----&gt; </span><span class="mi">3</span>     <span class="k">return</span> <span class="n">stemmer</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">teks</span><span class="p">))</span>
 
@@ -1688,47 +1768,47 @@ Jumlah kolom sesudah PCA : 6
   <tbody>
     <tr>
       <th>195</th>
-      <td>-0.117623</td>
-      <td>-0.000077</td>
-      <td>-0.166872</td>
-      <td>-0.330100</td>
-      <td>0.085351</td>
+      <td>-0.117621</td>
+      <td>-0.000078</td>
+      <td>-0.166871</td>
+      <td>-0.330008</td>
+      <td>0.085363</td>
       <td>finance</td>
     </tr>
     <tr>
       <th>196</th>
       <td>-0.050863</td>
-      <td>0.018440</td>
-      <td>-0.022229</td>
-      <td>-0.027375</td>
-      <td>0.002124</td>
+      <td>0.018438</td>
+      <td>-0.022234</td>
+      <td>-0.027291</td>
+      <td>0.001092</td>
       <td>finance</td>
     </tr>
     <tr>
       <th>197</th>
-      <td>-0.103782</td>
-      <td>-0.055460</td>
-      <td>-0.031896</td>
-      <td>-0.064615</td>
-      <td>0.018911</td>
+      <td>-0.103783</td>
+      <td>-0.055459</td>
+      <td>-0.031900</td>
+      <td>-0.064864</td>
+      <td>0.017410</td>
       <td>finance</td>
     </tr>
     <tr>
       <th>198</th>
-      <td>-0.083203</td>
-      <td>0.039178</td>
-      <td>-0.096859</td>
-      <td>-0.154276</td>
-      <td>0.028280</td>
+      <td>-0.083205</td>
+      <td>0.039168</td>
+      <td>-0.096824</td>
+      <td>-0.154393</td>
+      <td>0.028812</td>
       <td>finance</td>
     </tr>
     <tr>
       <th>199</th>
-      <td>-0.071497</td>
-      <td>0.055870</td>
-      <td>-0.044271</td>
-      <td>-0.067967</td>
-      <td>0.020659</td>
+      <td>-0.071498</td>
+      <td>0.055862</td>
+      <td>-0.044243</td>
+      <td>-0.068143</td>
+      <td>0.021876</td>
       <td>finance</td>
     </tr>
   </tbody>
@@ -1736,6 +1816,27 @@ Jumlah kolom sesudah PCA : 6
 </div></div></div>
 </div>
 </section>
+</section>
+<section id="download-dataset-dari-variable">
+<h2>Download dataset dari variable<a class="headerlink" href="#download-dataset-dari-variable" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Menyimpan dataframe ke dalam file CSV</span>
+<span class="n">dataset_sesudah_pca</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">'data/dataset_sesudah_pca.csv'</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">dataset_sebelum_pca</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">'data/dataset_sebelum_pca.csv'</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"File berhasil disimpan sebagai 'dataset_sesudah_pca.csv'"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"File berhasil disimpan sebagai 'dataset_sebelum_pca.csv'"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>File berhasil disimpan sebagai 'dataset_sesudah_pca.csv'
+File berhasil disimpan sebagai 'dataset_sebelum_pca.csv'
+</pre></div>
+</div>
+</div>
+</div>
 </section>
 </section>
 
@@ -1778,6 +1879,15 @@ Jumlah kolom sesudah PCA : 6
         <p class="prev-next-title"><strong>Teknik Scraping Website</strong></p>
       </div>
     </a>
+    <a class="right-next"
+       href="word2vec.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><strong>Algoritma Word2Vec : Skip-Gram</strong></p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               
@@ -1802,6 +1912,7 @@ Jumlah kolom sesudah PCA : 6
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pembuatan-tabel-4-principal-component-analysis-pca">Pembuatan Tabel 4: Principal Component Analysis (PCA)</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#download-dataset-dari-variable">Download dataset dari variable</a></li>
 </ul>
   </nav></div>
 

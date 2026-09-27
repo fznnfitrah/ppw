@@ -8,3 +8,5 @@ chapters:
     title: Scraping Data Berita
   - file: prepering-data
     title: Prepering Data Berita
+  - file: word2vec
+    title: Word2Vec
