@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Algoritma Word2Vec : Skip-Gram &#8212; Pencarian &amp; Penambangan Website</title>
+    <title>Penerapan Word2Vec pada Data Teks Bahasa Indonesia &#8212; Pencarian &amp; Penambangan Website</title>
   
   
   
@@ -57,6 +57,8 @@
     <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'word2vec';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -181,7 +183,8 @@
         <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="scraping-data.html">Scraping Data Berita</a></li>
 <li class="toctree-l1"><a class="reference internal" href="prepering-data.html">Prepering Data Berita</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Word2Vec</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#"><strong>Penerapan Word2Vec pada Data Teks Bahasa Indonesia</strong></a></li>
+
 </ul>
 
     </div>
@@ -367,7 +370,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Algoritma Word2Vec : Skip-Gram</h1>
+    <h1>Penerapan Word2Vec pada Data Teks Bahasa Indonesia</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -377,14 +380,35 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-understanding">Data Understanding</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-preprocessing">Data Preprocessing</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modeling-evaluasi">Modeling &amp; Evaluasi</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-1">Skenario 1</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-2">Skenario 2</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#"><strong>Penerapan Word2Vec pada Data Teks Bahasa Indonesia</strong></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#memahami-data-contoh-dan-parameter">Memahami Data Contoh dan Parameter</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cara-kerja-word2vec-skip-gram">Cara Kerja Word2Vec Skip-gram</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#membentuk-pasangan-target-dan-konteks">Membentuk Pasangan Target dan Konteks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#membaca-vektor-kata-dan-vocabulary">Membaca Vektor Kata dan Vocabulary</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#perbandingan-arsitektur-word2vec-skip-gram-dan-cbow"><strong>Perbandingan Arsitektur Word2Vec: Skip-gram dan CBOW</strong></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-understanding"><strong>Data Understanding</strong></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#memuat-dan-memeriksa-dataset">Memuat dan Memeriksa Dataset</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#eksplorasi-teks-dan-interpretasi-output">Eksplorasi Teks dan Interpretasi Output</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-preprocessing"><strong>Data Preprocessing</strong></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#melatih-embedding-dan-membentuk-fitur-dokumen">Melatih Embedding dan Membentuk Fitur Dokumen</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-1-menghapus-angka">Skenario 1: Menghapus Angka</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-2-mempertahankan-angka">Skenario 2: Mempertahankan Angka</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modeling-dan-evaluasi"><strong>Modeling dan Evaluasi</strong></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Skenario 1: Menghapus Angka</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-2-angka-dipertahankan">Skenario 2: Angka Dipertahankan</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simpulan-dan-catatan-metodologis"><strong>Simpulan dan Catatan Metodologis</strong></a></li>
 </ul>
 </li>
 </ul>
+
             </nav>
         </div>
     </div>
@@ -395,7 +419,16 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <div class="cell docutils container">
+  <section class="tex2jax_ignore mathjax_ignore" id="penerapan-word2vec-pada-data-teks-bahasa-indonesia">
+<h1><strong>Penerapan Word2Vec pada Data Teks Bahasa Indonesia</strong><a class="headerlink" href="#penerapan-word2vec-pada-data-teks-bahasa-indonesia" title="Link to this heading">#</a></h1>
+<p>Notebook ini menjelaskan bagaimana teks berita diubah menjadi representasi numerik menggunakan <strong>Word2Vec</strong>, khususnya arsitektur <strong>Skip-gram</strong>. Pembahasan dimulai dari contoh kecil agar konsep target dan konteks mudah diamati, kemudian dilanjutkan dengan penerapan pada data berita hasil scraping dari kategori <code class="docutils literal notranslate"><span class="pre">sport</span></code> dan <code class="docutils literal notranslate"><span class="pre">finance</span></code>.</p>
+<p>Alur notebook terdiri dari dua bagian utama:</p>
+<ol class="arabic simple">
+<li><p><strong>Contoh konsep</strong>: membentuk pasangan kata target-konteks, melatih Word2Vec sederhana, dan melihat vektor kata.</p></li>
+<li><p><strong>Penerapan pada data nyata</strong>: memahami dataset, melakukan preprocessing, melatih Skip-gram, mengubah vektor kata menjadi vektor dokumen, lalu menguji klasifikasi dengan Gaussian Naive Bayes.</p></li>
+</ol>
+<p>Word2Vec berbeda dari representasi seperti Bag of Words atau TF-IDF. Bag of Words dan TF-IDF terutama mencatat kemunculan atau bobot kata, sedangkan Word2Vec mempelajari representasi kata dari hubungan kata tersebut dengan kata-kata di sekitarnya. Kata yang digunakan dalam konteks yang mirip diharapkan memiliki vektor yang berdekatan.</p>
+<div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gensim.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Word2Vec</span>
 </pre></div>
@@ -422,6 +455,10 @@ document.write(`
 </div>
 </div>
 </div>
+<section id="memahami-data-contoh-dan-parameter">
+<h2>Memahami Data Contoh dan Parameter<a class="headerlink" href="#memahami-data-contoh-dan-parameter" title="Link to this heading">#</a></h2>
+<p>Data <code class="docutils literal notranslate"><span class="pre">kalimat</span></code> berupa daftar kalimat yang sudah ditokenisasi: setiap kalimat adalah list kata, sehingga batas antarkalimat tetap diketahui oleh Gensim. Contohnya, dua kalimat pertama membahas pasar dan saham, sedangkan kalimat ketiga berisi konteks olahraga.</p>
+<p><code class="docutils literal notranslate"><span class="pre">vector_size</span></code> menentukan banyaknya angka pada vektor setiap kata. Pada contoh ini nilainya 10, jadi sebuah kata direpresentasikan oleh 10 angka yang dipelajari model. <code class="docutils literal notranslate"><span class="pre">window</span></code> menentukan seberapa jauh kata di kiri dan kanan menjadi konteks bagi kata target. Dengan <code class="docutils literal notranslate"><span class="pre">window_size=5</span></code> dan kalimat contoh yang hanya berisi 6 atau 7 kata, hampir semua kata lain dalam kalimat menjadi konteks. Ini memudahkan ilustrasi, tetapi korpus sekecil ini belum cukup untuk menghasilkan embedding yang kuat atau stabil.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 3. Membuat dan melatih model Skip-gram (sg=1)</span>
@@ -438,6 +475,15 @@ document.write(`
 </div>
 </div>
 </div>
+</section>
+<section id="cara-kerja-word2vec-skip-gram">
+<h2>Cara Kerja Word2Vec Skip-gram<a class="headerlink" href="#cara-kerja-word2vec-skip-gram" title="Link to this heading">#</a></h2>
+<p>Word2Vec belajar membuat vektor kata dengan menggunakan konteks di sekitarnya sebagai sinyal pembelajaran. Pada <strong>Skip-gram</strong>, satu kata target digunakan untuk memprediksi kata-kata konteksnya. Secara intuitif, model berusaha memperbesar peluang kata konteks yang benar muncul di sekitar target.</p>
+<p>Jika <code class="docutils literal notranslate"><span class="pre">w</span></code> adalah kata target dan <code class="docutils literal notranslate"><span class="pre">c</span></code> adalah kata konteks, bentuk softmax sederhananya dapat ditulis:</p>
+<div class="math notranslate nohighlight">
+\[P(c \mid w) = \frac{\exp(\mathbf{u}_c^{\mathsf{T}}\mathbf{v}_w)}{\sum_{c' \in V} \exp(\mathbf{u}_{c'}^{\mathsf{T}}\mathbf{v}_w)}\]</div>
+<p><code class="docutils literal notranslate"><span class="pre">V</span></code> adalah vocabulary, <code class="docutils literal notranslate"><span class="pre">v_w</span></code> vektor target, dan <code class="docutils literal notranslate"><span class="pre">u_c</span></code> vektor konteks. Pelatihan menyesuaikan vektor agar konteks yang benar lebih mudah diprediksi. Implementasi praktis Gensim menggunakan strategi training yang efisien; persamaan ini membantu menjelaskan tujuannya, bukan langkah hitung literal untuk setiap parameter.</p>
+<p>Pada pemanggilan <code class="docutils literal notranslate"><span class="pre">Word2Vec</span></code>, <code class="docutils literal notranslate"><span class="pre">sg=1</span></code> memilih Skip-gram, <code class="docutils literal notranslate"><span class="pre">min_count=1</span></code> mempertahankan semua kata pada contoh, dan <code class="docutils literal notranslate"><span class="pre">seed</span></code> mengatur inisialisasi acak agar percobaan lebih mudah diulang. Dengan data yang sangat sedikit, vektor hanya contoh hasil belajar dan belum merepresentasikan makna bahasa secara andal.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">ekstrak_kombinasi_skipgram</span><span class="p">(</span><span class="n">kalimat_list</span><span class="p">,</span> <span class="n">window_size</span><span class="p">):</span>
@@ -460,6 +506,12 @@ document.write(`
 </div>
 </div>
 </div>
+</section>
+<section id="membentuk-pasangan-target-dan-konteks">
+<h2>Membentuk Pasangan Target dan Konteks<a class="headerlink" href="#membentuk-pasangan-target-dan-konteks" title="Link to this heading">#</a></h2>
+<p>Fungsi <code class="docutils literal notranslate"><span class="pre">ekstrak_kombinasi_skipgram</span></code> membuat ilustrasi pasangan dengan mengunjungi setiap posisi kata sebagai target, lalu mengambil kata lain dalam rentang window sebagai konteks. <code class="docutils literal notranslate"><span class="pre">max</span></code> dan <code class="docutils literal notranslate"><span class="pre">min</span></code> menjaga batas window agar tidak melewati awal atau akhir kalimat, sedangkan syarat <code class="docutils literal notranslate"><span class="pre">i</span> <span class="pre">!=</span> <span class="pre">j</span></code> mencegah kata menjadi konteks dirinya sendiri.</p>
+<p>Pasangan bersifat berarah: <code class="docutils literal notranslate"><span class="pre">(saham,</span> <span class="pre">pasar)</span></code> berarti <code class="docutils literal notranslate"><span class="pre">saham</span></code> sebagai target dan <code class="docutils literal notranslate"><span class="pre">pasar</span></code> sebagai konteks; pasangan arah sebaliknya dibuat ketika posisi <code class="docutils literal notranslate"><span class="pre">pasar</span></code> dikunjungi. Setelah itu, <code class="docutils literal notranslate"><span class="pre">set</span></code> menghapus pasangan yang sama untuk menampilkan daftar unik. Langkah penghapusan duplikat ini hanya untuk ringkasan contoh. Dalam training, jumlah kemunculan dan konteks yang terbentuk dari korpus tetap menjadi sinyal belajar, bukan sekadar daftar pasangan unik.</p>
+<p>Dengan window 5 pada kalimat-kalimat pendek di atas, sebagian besar kata lain dalam kalimat masuk sebagai konteks. Pada korpus berita, ukuran window lebih kecil atau lebih besar akan mengubah jenis hubungan lokal yang dipelajari model.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. Ekstrak seluruh pasangan berdasarkan window_size</span>
@@ -629,10 +681,47 @@ Vektor angka untuk kata 'saham':
 </div>
 </div>
 </div>
-<section class="tex2jax_ignore mathjax_ignore" id="algoritma-word2vec-skip-gram">
-<h1><strong>Algoritma Word2Vec : Skip-Gram</strong><a class="headerlink" href="#algoritma-word2vec-skip-gram" title="Link to this heading">#</a></h1>
+</section>
+<section id="membaca-vektor-kata-dan-vocabulary">
+<h2>Membaca Vektor Kata dan Vocabulary<a class="headerlink" href="#membaca-vektor-kata-dan-vocabulary" title="Link to this heading">#</a></h2>
+<p>Atribut <code class="docutils literal notranslate"><span class="pre">model_skipgram.wv[kata]</span></code> mengambil vektor yang telah dipelajari untuk kata tersebut. Karena <code class="docutils literal notranslate"><span class="pre">vector_size=10</span></code>, vektor contoh memiliki 10 komponen numerik. Setiap komponen tidak memiliki arti kata yang dapat ditafsirkan sendiri; makna representasi terlihat dari pola hubungan ant vektor, misalnya kemiripan atau kedekatan kata dalam ruang vektor.</p>
+<p><code class="docutils literal notranslate"><span class="pre">model_skipgram.wv.index_to_key</span></code> menampilkan kata-kata yang masuk ke vocabulary model. Kata di luar daftar ini tidak memiliki vektor pada model. Pada contoh, <code class="docutils literal notranslate"><span class="pre">min_count=1</span></code> membuat kata yang hanya muncul sekali tetap disertakan.</p>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="perbandingan-arsitektur-word2vec-skip-gram-dan-cbow">
+<h1><strong>Perbandingan Arsitektur Word2Vec: Skip-gram dan CBOW</strong><a class="headerlink" href="#perbandingan-arsitektur-word2vec-skip-gram-dan-cbow" title="Link to this heading">#</a></h1>
+<p>Word2Vec adalah metode untuk mempelajari vektor kata dari konteks. Dua arsitektur utamanya memiliki arah prediksi yang berlawanan:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Aspek</p></th>
+<th class="head"><p>Skip-gram</p></th>
+<th class="head"><p>CBOW</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Masukan model</p></td>
+<td><p>Satu kata target</p></td>
+<td><p>Kata-kata konteks di sekitar target</p></td>
+</tr>
+<tr class="row-odd"><td><p>Prediksi</p></td>
+<td><p>Kata-kata konteks</p></td>
+<td><p>Satu kata target</p></td>
+</tr>
+<tr class="row-even"><td><p>Contoh</p></td>
+<td><p>Dari <code class="docutils literal notranslate"><span class="pre">saham</span></code>, prediksi <code class="docutils literal notranslate"><span class="pre">harga</span></code>, <code class="docutils literal notranslate"><span class="pre">pasar</span></code>, atau <code class="docutils literal notranslate"><span class="pre">investor</span></code></p></td>
+<td><p>Dari <code class="docutils literal notranslate"><span class="pre">harga</span></code> dan <code class="docutils literal notranslate"><span class="pre">pasar</span></code>, prediksi kata di tengahnya, misalnya <code class="docutils literal notranslate"><span class="pre">saham</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Karakter umum</p></td>
+<td><p>Membentuk banyak prediksi konteks untuk setiap target; sering berguna untuk mempelajari kata yang jarang jika korpus memadai</p></td>
+<td><p>Menggabungkan konteks untuk satu prediksi; umumnya lebih cepat pada korpus besar</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Pada Gensim, <code class="docutils literal notranslate"><span class="pre">sg=1</span></code> memilih Skip-gram dan <code class="docutils literal notranslate"><span class="pre">sg=0</span></code> memilih CBOW. Notebook ini melatih Skip-gram; CBOW dijelaskan sebagai pembanding konsep, bukan dijalankan sebagai eksperimen terpisah. Pilihan yang lebih baik bergantung pada ukuran dan karakteristik korpus serta kebutuhan tugas.</p>
 <section id="data-understanding">
-<h2>Data Understanding<a class="headerlink" href="#data-understanding" title="Link to this heading">#</a></h2>
+<h2><strong>Data Understanding</strong><a class="headerlink" href="#data-understanding" title="Link to this heading">#</a></h2>
+<p>Bagian ini beralih dari contoh kecil ke data berita yang dikumpulkan melalui scraping. Dua file CSV berisi artikel dari kategori <code class="docutils literal notranslate"><span class="pre">sport</span></code> dan <code class="docutils literal notranslate"><span class="pre">finance</span></code>; <code class="docutils literal notranslate"><span class="pre">kategori</span></code> menjadi label klasifikasi, sedangkan <code class="docutils literal notranslate"><span class="pre">teks</span></code> menjadi isi yang akan diproses. Kolom URL berguna sebagai rujukan sumber, tetapi tidak digunakan sebagai isi teks untuk membentuk embedding.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
@@ -728,6 +817,10 @@ Vektor angka untuk kata 'saham':
 </div>
 </div>
 </div>
+<section id="memuat-dan-memeriksa-dataset">
+<h3>Memuat dan Memeriksa Dataset<a class="headerlink" href="#memuat-dan-memeriksa-dataset" title="Link to this heading">#</a></h3>
+<p>Dua dataset dibaca sebagai DataFrame lalu digabungkan dengan <code class="docutils literal notranslate"><span class="pre">concat</span></code>. <code class="docutils literal notranslate"><span class="pre">ignore_index=True</span></code> membuat indeks baris baru berurutan setelah penggabungan. Kolom URL kemudian dilepas dari <code class="docutils literal notranslate"><span class="pre">df_all</span></code> agar fitur berfokus pada teks dan label, sementara dataset awal masih tersedia pada <code class="docutils literal notranslate"><span class="pre">df_all_ori</span></code>.</p>
+<p>Pemeriksaan distribusi kategori menunjukkan jumlah dokumen pada tiap kelas; distribusi yang seimbang mengurangi risiko model hanya mengikuti kelas mayoritas, tetapi tidak menjamin data representatif. Pemeriksaan nilai kosong dan duplikasi membantu menemukan masalah kualitas dasar sebelum pemrosesan. Hasil setiap pemeriksaan harus dibaca dari output aktual notebook, bukan diasumsikan terlebih dahulu.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_sport</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">'data/dataset_detik_sport.csv'</span><span class="p">)</span>
@@ -924,7 +1017,7 @@ Name: jumlah_kata, dtype: float64
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Membuat WordCloud...
 </pre></div>
 </div>
-<img alt="_images/708c89525df70bf5d2926ba653531c5f229f8d5e2e24a25a36e4ea926681a54a.png" src="_images/708c89525df70bf5d2926ba653531c5f229f8d5e2e24a25a36e4ea926681a54a.png" />
+<img alt="_images/ff69465244c4d57f763ee9b64793c2f20389d6347b33471255a913bbc4c3d22c.png" src="_images/ff69465244c4d57f763ee9b64793c2f20389d6347b33471255a913bbc4c3d22c.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -991,8 +1084,16 @@ Name: jumlah_kata, dtype: float64
 </div></div></div>
 </div>
 </section>
+<section id="eksplorasi-teks-dan-interpretasi-output">
+<h3>Eksplorasi Teks dan Interpretasi Output<a class="headerlink" href="#eksplorasi-teks-dan-interpretasi-output" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">str.len()</span></code> pada pemeriksaan awal menghitung jumlah karakter, termasuk spasi dan tanda baca. Fungsi <code class="docutils literal notranslate"><span class="pre">visualisasi_panjang_kata</span></code> menghitung token dengan <code class="docutils literal notranslate"><span class="pre">split()</span></code>, lalu menyajikan histogram, boxplot, dan statistik deskriptif untuk melihat sebaran serta dokumen yang panjangnya menyimpang. Keduanya mengukur hal berbeda.</p>
+<p>WordCloud merangkum kata yang paling sering muncul pada gabungan teks; ukuran kata mencerminkan frekuensi, bukan tingkat kepentingan atau sentimen. Fungsi <code class="docutils literal notranslate"><span class="pre">cari_kata</span></code> mencari substring tanpa membedakan huruf besar-kecil dan menampilkan kategori serta cuplikan teks yang cocok. Eksplorasi ini membantu memahami korpus sebelum menentukan preprocessing, tetapi bukan pengganti evaluasi model.</p>
+</section>
+</section>
 <section id="data-preprocessing">
-<h2>Data Preprocessing<a class="headerlink" href="#data-preprocessing" title="Link to this heading">#</a></h2>
+<h2><strong>Data Preprocessing</strong><a class="headerlink" href="#data-preprocessing" title="Link to this heading">#</a></h2>
+<p>Sebelum dipelajari oleh Word2Vec, teks mentah diubah menjadi token. Tahap preprocessing yang konsisten penting karena Word2Vec menganggap bentuk token yang berbeda sebagai kata yang berbeda. Misalnya, perbedaan kapitalisasi atau tanda baca dapat menambah variasi vocabulary yang sebenarnya tidak diperlukan.</p>
+<p>Fungsi modular di bawah menyediakan pilihan untuk menghapus angka, stopword, dan melakukan stemming. Hasil akhirnya berupa list token per dokumen, yaitu format yang dibutuhkan Gensim. Skenario 1 dan 2 menggunakan pipeline yang sama tetapi berbeda pada satu keputusan: apakah angka dihapus.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">preprocess_modular</span><span class="p">(</span><span class="n">teks</span><span class="p">,</span> <span class="n">hapus_angka</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hapus_stopword</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pakai_stemming</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -1051,6 +1152,13 @@ Name: jumlah_kata, dtype: float64
 </div>
 </div>
 </div>
+<section id="melatih-embedding-dan-membentuk-fitur-dokumen">
+<h3>Melatih Embedding dan Membentuk Fitur Dokumen<a class="headerlink" href="#melatih-embedding-dan-membentuk-fitur-dokumen" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">latih_skipgram</span></code> melatih Word2Vec dari kumpulan list token. Pada penerapan ini, <code class="docutils literal notranslate"><span class="pre">ukuran_vektor=50</span></code> berarti setiap kata memiliki 50 komponen, <code class="docutils literal notranslate"><span class="pre">ukuran_window=3</span></code> menggunakan konteks hingga tiga posisi di sekitar target, dan <code class="docutils literal notranslate"><span class="pre">sg=1</span></code> memilih Skip-gram. <code class="docutils literal notranslate"><span class="pre">min_count=1</span></code> mempertahankan kata yang hanya muncul sekali; ini mencegah kata hilang dari vocabulary, tetapi pada korpus kecil dapat memasukkan banyak kata langka dengan vektor yang kurang terlatih.</p>
+<p>Model menghasilkan vektor <strong>kata</strong>, sedangkan Gaussian Naive Bayes membutuhkan vektor berukuran tetap untuk setiap <strong>dokumen</strong>. Fungsi <code class="docutils literal notranslate"><span class="pre">get_vektor_rata_rata</span></code> mengambil vektor semua token yang dikenal model lalu menghitung rata-ratanya:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\\mathbf{d} = \\frac{1}{m} \\sum_{i=1}^{m} \\mathbf{v}_{w_i}\end{split}\]</div>
+<p><code class="docutils literal notranslate"><span class="pre">m</span></code> adalah jumlah token dokumen yang memiliki vektor. Hasilnya tetap berdimensi 50 berapa pun panjang artikelnya. Jika tidak ada token yang dikenal, fungsi menghasilkan vektor nol. Mean pooling praktis untuk klasifikasi, tetapi menghilangkan urutan kata dan merangkum semua kata dengan bobot rata-rata yang sama.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">daftar_stopword</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">StopWordRemoverFactory</span><span class="p">()</span><span class="o">.</span><span class="n">get_stop_words</span><span class="p">())</span>
@@ -1061,6 +1169,11 @@ Name: jumlah_kata, dtype: float64
 </div>
 </div>
 </div>
+</section>
+<section id="skenario-1-menghapus-angka">
+<h3>Skenario 1: Menghapus Angka<a class="headerlink" href="#skenario-1-menghapus-angka" title="Link to this heading">#</a></h3>
+<p>Daftar stopword dibuat sebagai <code class="docutils literal notranslate"><span class="pre">set</span></code> agar pemeriksaan keanggotaan token efisien, sedangkan stemmer Sastrawi disiapkan satu kali untuk digunakan berulang kali. <code class="docutils literal notranslate"><span class="pre">tqdm.pandas()</span></code> mengaktifkan progress bar pada pemrosesan kolom.</p>
+<p>Pada skenario 1, preprocessing dijalankan dengan <code class="docutils literal notranslate"><span class="pre">hapus_angka=True</span></code>, <code class="docutils literal notranslate"><span class="pre">hapus_stopword=True</span></code>, dan <code class="docutils literal notranslate"><span class="pre">pakai_stemming=True</span></code>. Dengan demikian angka, stopword, dan imbuhan diproses sesuai konfigurasi tersebut. Pilihan ini berguna ketika angka tidak dianggap sebagai pembeda kategori, tetapi dapat menghilangkan informasi penting seperti tahun, skor, atau nomor pertandingan.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Preprocessing Penuh (Hapus Angka, Stopword, Stemming)</span>
@@ -1075,34 +1188,219 @@ Name: jumlah_kata, dtype: float64
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1. Memulai Preprocessing Skenario 1 (Ini akan memakan waktu karena Stemming)...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  0%|                                                                                                                                                      | 0/200 [00:00&lt;?, ?it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  0%|                                                                                                                                                       | 0/200 [00:00&lt;?, ?it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  1%|█▍                                                                                                                                            | 2/200 [00:03&lt;05:43,  1.74s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  1%|█▍                                                                                                                                             | 2/200 [00:03&lt;05:23,  1.64s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  2%|██▏                                                                                                                                           | 3/200 [00:07&lt;08:13,  2.51s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  2%|██▏                                                                                                                                            | 3/200 [00:06&lt;07:00,  2.14s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  2%|██▊                                                                                                                                           | 4/200 [00:12&lt;12:14,  3.75s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  2%|██▊                                                                                                                                            | 4/200 [00:11&lt;11:04,  3.39s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  2%|███▌                                                                                                                                          | 5/200 [00:14&lt;10:01,  3.08s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  2%|███▌                                                                                                                                           | 5/200 [00:13&lt;09:22,  2.88s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  3%|████▎                                                                                                                                         | 6/200 [00:17&lt;09:27,  2.92s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  3%|████▎                                                                                                                                          | 6/200 [00:16&lt;09:02,  2.79s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  4%|████▉                                                                                                                                         | 7/200 [00:24&lt;13:56,  4.33s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  4%|█████                                                                                                                                          | 7/200 [00:22&lt;12:53,  4.01s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  4%|█████▋                                                                                                                                        | 8/200 [00:28&lt;13:34,  4.24s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  4%|█████▋                                                                                                                                         | 8/200 [00:26&lt;12:29,  3.90s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  4%|█████▋                                                                                                                                        | 8/200 [00:29&lt;11:59,  3.75s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  4%|█████▋                                                                                                                                         | 8/200 [00:29&lt;11:59,  3.75s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>KeyboardInterrupt
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">29</span><span class="p">],</span> <span class="n">line</span> <span class="mi">3</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="c1"># Preprocessing Penuh (Hapus Angka, Stopword, Stemming)</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="nb">print</span><span class="p">(</span><span class="s2">"1. Memulai Preprocessing Skenario 1 (Ini akan memakan waktu karena Stemming)..."</span><span class="p">)</span>
+<span class="ne">----&gt; </span><span class="mi">3</span> <span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_1'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_all</span><span class="p">[</span><span class="s1">'teks'</span><span class="p">]</span><span class="o">.</span><span class="n">progress_apply</span><span class="p">(</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span>     <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">preprocess_modular</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">hapus_angka</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hapus_stopword</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pakai_stemming</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="p">)</span>
+
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/site-packages/tqdm/std.py:923,</span> in <span class="ni">tqdm.pandas.&lt;locals&gt;.inner_generator.&lt;locals&gt;.inner</span><span class="nt">(df, func, *args, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">920</span> <span class="c1"># Apply the provided function (in **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">921</span> <span class="c1"># on the df using our wrapper (which provides bar updating)</span>
+<span class="g g-Whitespace">    </span><span class="mi">922</span> <span class="k">try</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">923</span>     <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">df_function</span><span class="p">)(</span><span class="n">wrapper</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">924</span> <span class="k">finally</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">925</span>     <span class="n">t</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/site-packages/pandas/core/series.py:4943,</span> in <span class="ni">Series.apply</span><span class="nt">(self, func, convert_dtype, args, by_row, **kwargs)</span>
+<span class="g g-Whitespace">   </span><span class="mi">4808</span> <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span>
+<span class="g g-Whitespace">   </span><span class="mi">4809</span>     <span class="bp">self</span><span class="p">,</span>
+<span class="g g-Whitespace">   </span><span class="mi">4810</span>     <span class="n">func</span><span class="p">:</span> <span class="n">AggFuncType</span><span class="p">,</span>
+   <span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">4815</span>     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="g g-Whitespace">   </span><span class="mi">4816</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span> <span class="o">|</span> <span class="n">Series</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">4817</span><span class="w">     </span><span class="sd">"""</span>
+<span class="g g-Whitespace">   </span><span class="mi">4818</span><span class="sd">     Invoke function on values of Series.</span>
+<span class="g g-Whitespace">   </span><span class="mi">4819</span><span class="sd"> </span>
+<span class="sd">   (...)</span>
+<span class="g g-Whitespace">   </span><span class="mi">4934</span><span class="sd">     dtype: float64</span>
+<span class="g g-Whitespace">   </span><span class="mi">4935</span><span class="sd">     """</span>
+<span class="g g-Whitespace">   </span><span class="mi">4936</span>     <span class="k">return</span> <span class="n">SeriesApply</span><span class="p">(</span>
+<span class="g g-Whitespace">   </span><span class="mi">4937</span>         <span class="bp">self</span><span class="p">,</span>
+<span class="g g-Whitespace">   </span><span class="mi">4938</span>         <span class="n">func</span><span class="p">,</span>
+<span class="g g-Whitespace">   </span><span class="mi">4939</span>         <span class="n">convert_dtype</span><span class="o">=</span><span class="n">convert_dtype</span><span class="p">,</span>
+<span class="g g-Whitespace">   </span><span class="mi">4940</span>         <span class="n">by_row</span><span class="o">=</span><span class="n">by_row</span><span class="p">,</span>
+<span class="g g-Whitespace">   </span><span class="mi">4941</span>         <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span>
+<span class="g g-Whitespace">   </span><span class="mi">4942</span>         <span class="n">kwargs</span><span class="o">=</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="ne">-&gt; </span><span class="mi">4943</span>     <span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">()</span>
+
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/site-packages/pandas/core/apply.py:1422,</span> in <span class="ni">SeriesApply.apply</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1419</span>     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_compat</span><span class="p">()</span>
+<span class="g g-Whitespace">   </span><span class="mi">1421</span> <span class="c1"># self.func is Callable</span>
+<span class="ne">-&gt; </span><span class="mi">1422</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_standard</span><span class="p">()</span>
+
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/site-packages/pandas/core/apply.py:1502,</span> in <span class="ni">SeriesApply.apply_standard</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1496</span> <span class="c1"># row-wise access</span>
+<span class="g g-Whitespace">   </span><span class="mi">1497</span> <span class="c1"># apply doesn't have a `na_action` keyword and for backward compat reasons</span>
+<span class="g g-Whitespace">   </span><span class="mi">1498</span> <span class="c1"># we need to give `na_action="ignore"` for categorical data.</span>
+<span class="g g-Whitespace">   </span><span class="mi">1499</span> <span class="c1"># TODO: remove the `na_action="ignore"` when that default has been changed in</span>
+<span class="g g-Whitespace">   </span><span class="mi">1500</span> <span class="c1">#  Categorical (GH51645).</span>
+<span class="g g-Whitespace">   </span><span class="mi">1501</span> <span class="n">action</span> <span class="o">=</span> <span class="s2">"ignore"</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">CategoricalDtype</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+<span class="ne">-&gt; </span><span class="mi">1502</span> <span class="n">mapped</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">_map_values</span><span class="p">(</span>
+<span class="g g-Whitespace">   </span><span class="mi">1503</span>     <span class="n">mapper</span><span class="o">=</span><span class="n">curried</span><span class="p">,</span> <span class="n">na_action</span><span class="o">=</span><span class="n">action</span><span class="p">,</span> <span class="n">convert</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">convert_dtype</span>
+<span class="g g-Whitespace">   </span><span class="mi">1504</span> <span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1506</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mapped</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mapped</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ABCSeries</span><span class="p">):</span>
+<span class="g g-Whitespace">   </span><span class="mi">1507</span>     <span class="c1"># GH#43986 Need to do list(mapped) in order to get treated as nested</span>
+<span class="g g-Whitespace">   </span><span class="mi">1508</span>     <span class="c1">#  See also GH#25959 regarding EA support</span>
+<span class="g g-Whitespace">   </span><span class="mi">1509</span>     <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">_constructor_expanddim</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">mapped</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/site-packages/pandas/core/base.py:925,</span> in <span class="ni">IndexOpsMixin._map_values</span><span class="nt">(self, mapper, na_action, convert)</span>
+<span class="g g-Whitespace">    </span><span class="mi">922</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">ExtensionArray</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">923</span>     <span class="k">return</span> <span class="n">arr</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">mapper</span><span class="p">,</span> <span class="n">na_action</span><span class="o">=</span><span class="n">na_action</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">925</span> <span class="k">return</span> <span class="n">algorithms</span><span class="o">.</span><span class="n">map_array</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">mapper</span><span class="p">,</span> <span class="n">na_action</span><span class="o">=</span><span class="n">na_action</span><span class="p">,</span> <span class="n">convert</span><span class="o">=</span><span class="n">convert</span><span class="p">)</span>
+
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/site-packages/pandas/core/algorithms.py:1743,</span> in <span class="ni">map_array</span><span class="nt">(arr, mapper, na_action, convert)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1741</span> <span class="n">values</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1742</span> <span class="k">if</span> <span class="n">na_action</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<span class="ne">-&gt; </span><span class="mi">1743</span>     <span class="k">return</span> <span class="n">lib</span><span class="o">.</span><span class="n">map_infer</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">mapper</span><span class="p">,</span> <span class="n">convert</span><span class="o">=</span><span class="n">convert</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1744</span> <span class="k">else</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">1745</span>     <span class="k">return</span> <span class="n">lib</span><span class="o">.</span><span class="n">map_infer_mask</span><span class="p">(</span>
+<span class="g g-Whitespace">   </span><span class="mi">1746</span>         <span class="n">values</span><span class="p">,</span> <span class="n">mapper</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">isna</span><span class="p">(</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">),</span> <span class="n">convert</span><span class="o">=</span><span class="n">convert</span>
+<span class="g g-Whitespace">   </span><span class="mi">1747</span>     <span class="p">)</span>
+
+<span class="nn">File pandas/_libs/lib.pyx:2999,</span> in <span class="ni">pandas._libs.lib.map_infer</span><span class="nt">()</span>
+
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/site-packages/tqdm/std.py:918,</span> in <span class="ni">tqdm.pandas.&lt;locals&gt;.inner_generator.&lt;locals&gt;.inner.&lt;locals&gt;.wrapper</span><span class="nt">(*args, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">912</span> <span class="k">def</span><span class="w"> </span><span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">913</span>     <span class="c1"># update tbar correctly</span>
+<span class="g g-Whitespace">    </span><span class="mi">914</span>     <span class="c1"># it seems `pandas apply` calls `func` twice</span>
+<span class="g g-Whitespace">    </span><span class="mi">915</span>     <span class="c1"># on the first column/row to decide whether it can</span>
+<span class="g g-Whitespace">    </span><span class="mi">916</span>     <span class="c1"># take a fast or slow code path; so stop when t.total==t.n</span>
+<span class="g g-Whitespace">    </span><span class="mi">917</span>     <span class="n">t</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">1</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">t</span><span class="o">.</span><span class="n">total</span> <span class="ow">or</span> <span class="n">t</span><span class="o">.</span><span class="n">n</span> <span class="o">&lt;</span> <span class="n">t</span><span class="o">.</span><span class="n">total</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">918</span>     <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<span class="nn">Cell In[29], line 4,</span> in <span class="ni">&lt;lambda&gt;</span><span class="nt">(x)</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="c1"># Preprocessing Penuh (Hapus Angka, Stopword, Stemming)</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="nb">print</span><span class="p">(</span><span class="s2">"1. Memulai Preprocessing Skenario 1 (Ini akan memakan waktu karena Stemming)..."</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_1'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_all</span><span class="p">[</span><span class="s1">'teks'</span><span class="p">]</span><span class="o">.</span><span class="n">progress_apply</span><span class="p">(</span>
+<span class="ne">----&gt; </span><span class="mi">4</span>     <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">preprocess_modular</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">hapus_angka</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hapus_stopword</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pakai_stemming</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="p">)</span>
+
+<span class="nn">Cell In[26], line 20,</span> in <span class="ni">preprocess_modular</span><span class="nt">(teks, hapus_angka, hapus_stopword, pakai_stemming)</span>
+<span class="g g-Whitespace">     </span><span class="mi">18</span> <span class="k">if</span> <span class="n">pakai_stemming</span><span class="p">:</span>
+<span class="g g-Whitespace">     </span><span class="mi">19</span>     <span class="n">teks_gabung</span> <span class="o">=</span> <span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
+<span class="ne">---&gt; </span><span class="mi">20</span>     <span class="n">teks_stem</span> <span class="o">=</span> <span class="n">stemmer</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span><span class="n">teks_gabung</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">21</span>     <span class="n">tokens</span> <span class="o">=</span> <span class="n">teks_stem</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+<span class="g g-Whitespace">     </span><span class="mi">23</span> <span class="c1"># Return list of tokens (Format ideal untuk Gensim Word2Vec)</span>
+
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/site-packages/Sastrawi/Stemmer/CachedStemmer.py:20,</span> in <span class="ni">CachedStemmer.stem</span><span class="nt">(self, text)</span>
+<span class="g g-Whitespace">     </span><span class="mi">18</span>     <span class="n">stems</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">word</span><span class="p">))</span>
+<span class="g g-Whitespace">     </span><span class="mi">19</span> <span class="k">else</span><span class="p">:</span>
+<span class="ne">---&gt; </span><span class="mi">20</span>     <span class="n">stem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">delegatedStemmer</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">21</span>     <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">stem</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">22</span>     <span class="n">stems</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stem</span><span class="p">)</span>
+
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/site-packages/Sastrawi/Stemmer/Stemmer.py:27,</span> in <span class="ni">Stemmer.stem</span><span class="nt">(self, text)</span>
+<span class="g g-Whitespace">     </span><span class="mi">24</span> <span class="n">stems</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="g g-Whitespace">     </span><span class="mi">26</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">words</span><span class="p">:</span>
+<span class="ne">---&gt; </span><span class="mi">27</span>     <span class="n">stems</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stem_word</span><span class="p">(</span><span class="n">word</span><span class="p">))</span>
+<span class="g g-Whitespace">     </span><span class="mi">29</span> <span class="k">return</span> <span class="s1">' '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">stems</span><span class="p">)</span>
+
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/site-packages/Sastrawi/Stemmer/Stemmer.py:36,</span> in <span class="ni">Stemmer.stem_word</span><span class="nt">(self, word)</span>
+<span class="g g-Whitespace">     </span><span class="mi">34</span>     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">stem_plural_word</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">35</span> <span class="k">else</span><span class="p">:</span>
+<span class="ne">---&gt; </span><span class="mi">36</span>     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">stem_singular_word</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
+
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/site-packages/Sastrawi/Stemmer/Stemmer.py:84,</span> in <span class="ni">Stemmer.stem_singular_word</span><span class="nt">(self, word)</span>
+<span class="g g-Whitespace">     </span><span class="mi">82</span><span class="w"> </span><span class="sd">"""Stem a singular word to its common stem form."""</span>
+<span class="g g-Whitespace">     </span><span class="mi">83</span> <span class="n">context</span> <span class="o">=</span> <span class="n">Context</span><span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">visitor_provider</span><span class="p">)</span>
+<span class="ne">---&gt; </span><span class="mi">84</span> <span class="n">context</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+<span class="g g-Whitespace">     </span><span class="mi">86</span> <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="n">result</span>
+
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/site-packages/Sastrawi/Stemmer/Context/Context.py:37,</span> in <span class="ni">Context.execute</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">     </span><span class="mi">34</span><span class="w"> </span><span class="sd">"""Execute stemming process; the result can be retrieved with result"""</span>
+<span class="g g-Whitespace">     </span><span class="mi">36</span> <span class="c1">#step 1 - 5</span>
+<span class="ne">---&gt; </span><span class="mi">37</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_stemming_process</span><span class="p">()</span>
+<span class="g g-Whitespace">     </span><span class="mi">39</span> <span class="c1">#step 6</span>
+<span class="g g-Whitespace">     </span><span class="mi">40</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_word</span><span class="p">):</span>
+
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/site-packages/Sastrawi/Stemmer/Context/Context.py:80,</span> in <span class="ni">Context.start_stemming_process</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">     </span><span class="mi">77</span>     <span class="k">return</span>
+<span class="g g-Whitespace">     </span><span class="mi">79</span> <span class="c1">#step 4, 5</span>
+<span class="ne">---&gt; </span><span class="mi">80</span> <span class="bp">self</span><span class="o">.</span><span class="n">remove_prefixes</span><span class="p">()</span>
+<span class="g g-Whitespace">     </span><span class="mi">81</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_word</span><span class="p">):</span>
+<span class="g g-Whitespace">     </span><span class="mi">82</span>     <span class="k">return</span>
+
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/site-packages/Sastrawi/Stemmer/Context/Context.py:89,</span> in <span class="ni">Context.remove_prefixes</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">     </span><span class="mi">87</span> <span class="k">def</span><span class="w"> </span><span class="nf">remove_prefixes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="g g-Whitespace">     </span><span class="mi">88</span>     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+<span class="ne">---&gt; </span><span class="mi">89</span>         <span class="bp">self</span><span class="o">.</span><span class="n">accept_prefix_visitors</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prefix_pisitors</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">90</span>         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_word</span><span class="p">):</span>
+<span class="g g-Whitespace">     </span><span class="mi">91</span>             <span class="k">return</span>
+
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/site-packages/Sastrawi/Stemmer/Context/Context.py:110,</span> in <span class="ni">Context.accept_prefix_visitors</span><span class="nt">(self, visitors)</span>
+<span class="g g-Whitespace">    </span><span class="mi">108</span> <span class="n">removalCount</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">removals</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">109</span> <span class="k">for</span> <span class="n">visitor</span> <span class="ow">in</span> <span class="n">visitors</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">110</span>     <span class="bp">self</span><span class="o">.</span><span class="n">accept</span><span class="p">(</span><span class="n">visitor</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">111</span>     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_word</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">112</span>         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_word</span>
+
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/site-packages/Sastrawi/Stemmer/Context/Context.py:97,</span> in <span class="ni">Context.accept</span><span class="nt">(self, visitor)</span>
+<span class="g g-Whitespace">     </span><span class="mi">96</span> <span class="k">def</span><span class="w"> </span><span class="nf">accept</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">visitor</span><span class="p">):</span>
+<span class="ne">---&gt; </span><span class="mi">97</span>     <span class="n">visitor</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/site-packages/Sastrawi/Stemmer/Context/Visitor/RemovePlainPrefix.py:12,</span> in <span class="ni">RemovePlainPrefix.visit</span><span class="nt">(self, context)</span>
+<span class="g g-Whitespace">     </span><span class="mi">11</span> <span class="k">def</span><span class="w"> </span><span class="nf">visit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+<span class="ne">---&gt; </span><span class="mi">12</span>     <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">current_word</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">13</span>     <span class="k">if</span> <span class="n">result</span> <span class="o">!=</span> <span class="n">context</span><span class="o">.</span><span class="n">current_word</span><span class="p">:</span>
+<span class="g g-Whitespace">     </span><span class="mi">14</span>         <span class="n">removedPart</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s1">''</span><span class="p">,</span> <span class="n">context</span><span class="o">.</span><span class="n">current_word</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/site-packages/Sastrawi/Stemmer/Context/Visitor/RemovePlainPrefix.py:23,</span> in <span class="ni">RemovePlainPrefix.remove</span><span class="nt">(self, word)</span>
+<span class="g g-Whitespace">     </span><span class="mi">21</span> <span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">word</span><span class="p">):</span>
+<span class="g g-Whitespace">     </span><span class="mi">22</span><span class="w">     </span><span class="sd">"""Remove plain prefix : di|ke|se"""</span>
+<span class="ne">---&gt; </span><span class="mi">23</span>     <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">'^(di|ke|se)'</span><span class="p">,</span> <span class="s1">''</span><span class="p">,</span> <span class="n">word</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/re.py:209,</span> in <span class="ni">sub</span><span class="nt">(pattern, repl, string, count, flags)</span>
+<span class="g g-Whitespace">    </span><span class="mi">202</span> <span class="k">def</span><span class="w"> </span><span class="nf">sub</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">repl</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">203</span><span class="w">     </span><span class="sd">"""Return the string obtained by replacing the leftmost</span>
+<span class="g g-Whitespace">    </span><span class="mi">204</span><span class="sd">     non-overlapping occurrences of the pattern in string by the</span>
+<span class="g g-Whitespace">    </span><span class="mi">205</span><span class="sd">     replacement repl.  repl can be either a string or a callable;</span>
+<span class="g g-Whitespace">    </span><span class="mi">206</span><span class="sd">     if a string, backslash escapes in it are processed.  If it is</span>
+<span class="g g-Whitespace">    </span><span class="mi">207</span><span class="sd">     a callable, it's passed the Match object and must return</span>
+<span class="g g-Whitespace">    </span><span class="mi">208</span><span class="sd">     a replacement string to be used."""</span>
+<span class="ne">--&gt; </span><span class="mi">209</span>     <span class="k">return</span> <span class="n">_compile</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">flags</span><span class="p">)</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">repl</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
+
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/re.py:290,</span> in <span class="ni">_compile</span><span class="nt">(pattern, flags)</span>
+<span class="g g-Whitespace">    </span><span class="mi">288</span> <span class="k">def</span><span class="w"> </span><span class="nf">_compile</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">flags</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">289</span>     <span class="c1"># internal: compile pattern</span>
+<span class="ne">--&gt; </span><span class="mi">290</span>     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">flags</span><span class="p">,</span> <span class="n">RegexFlag</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">291</span>         <span class="n">flags</span> <span class="o">=</span> <span class="n">flags</span><span class="o">.</span><span class="n">value</span>
+<span class="g g-Whitespace">    </span><span class="mi">292</span>     <span class="k">try</span><span class="p">:</span>
+
+<span class="ne">KeyboardInterrupt</span>: 
 </pre></div>
 </div>
 </div>
@@ -1157,6 +1455,7 @@ Name: jumlah_kata, dtype: float64
 </div>
 </div>
 </div>
+<p>Setelah model Skip-gram dilatih, setiap artikel diubah menjadi satu vektor rata-rata. <code class="docutils literal notranslate"><span class="pre">df_skenario_1_X</span></code> berisi fitur numerik dokumen, sedangkan <code class="docutils literal notranslate"><span class="pre">df_skenario_1_y</span></code> berisi label kategori dengan urutan baris yang sama. Pada <code class="docutils literal notranslate"><span class="pre">ukuran_vektor=50</span></code>, setiap artikel direpresentasikan oleh 50 fitur. Nilai fitur bukan lagi kata yang dapat dibaca langsung, melainkan ringkasan hasil embedding kata.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Skenario 2: Pertahankan Angka, Hapus Stopword, Stemming</span>
@@ -1227,11 +1526,20 @@ Name: jumlah_kata, dtype: float64
 </div>
 </div>
 </section>
-<section id="modeling-evaluasi">
-<h2>Modeling &amp; Evaluasi<a class="headerlink" href="#modeling-evaluasi" title="Link to this heading">#</a></h2>
-<section id="skenario-1">
-<h3>Skenario 1<a class="headerlink" href="#skenario-1" title="Link to this heading">#</a></h3>
-<p>Melakukan Split antara data Train &amp; Test Skenario 1</p>
+<section id="skenario-2-mempertahankan-angka">
+<h3>Skenario 2: Mempertahankan Angka<a class="headerlink" href="#skenario-2-mempertahankan-angka" title="Link to this heading">#</a></h3>
+<p>Skenario 2 mengatur <code class="docutils literal notranslate"><span class="pre">hapus_angka=False</span></code>, sementara stopword removal dan stemming tetap aktif. Perbandingan dengan skenario 1 membantu melihat apakah informasi angka berpengaruh pada klasifikasi berita. Pastikan kedua skenario memakai data, pembagian train/test, dan pengaturan model yang sebanding agar perbedaan evaluasi dapat dikaitkan dengan preprocessing.</p>
+<p>Perlu dicatat, blok kode ini menimpa nama variabel model generik yang sama, tetapi membentuk fitur skenario 2 dari <code class="docutils literal notranslate"><span class="pre">token_skenario_2</span></code>. Nama objek dan pesan yang masih menyebut skenario 1 merupakan hal yang dapat membingungkan saat membaca output; di sini penjelasan membedakan hasil berdasarkan kolom fitur yang digunakan.</p>
+</section>
+</section>
+<section id="modeling-dan-evaluasi">
+<h2><strong>Modeling dan Evaluasi</strong><a class="headerlink" href="#modeling-dan-evaluasi" title="Link to this heading">#</a></h2>
+<p>Fitur dokumen dari Word2Vec digunakan untuk melatih Gaussian Naive Bayes dalam memprediksi label kategori. Pada pembagian data, <code class="docutils literal notranslate"><span class="pre">test_size=0.2</span></code> menyisihkan 20% dokumen untuk pengujian, <code class="docutils literal notranslate"><span class="pre">random_state=42</span></code> membuat pembagian dapat diulang, dan <code class="docutils literal notranslate"><span class="pre">stratify</span></code> menjaga proporsi kelas pada data latih dan uji.</p>
+<p><strong>Catatan evaluasi:</strong> pada alur saat ini, Word2Vec dilatih menggunakan seluruh dokumen sebelum <code class="docutils literal notranslate"><span class="pre">train_test_split</span></code>. Walaupun model embedding tidak menggunakan label kategori, teks yang nantinya menjadi data uji sudah ikut memengaruhi vocabulary dan vektor. Karena itu, pengukuran ini bukan evaluasi holdout yang sepenuhnya independen. Untuk evaluasi yang lebih ketat, pembagian dokumen dilakukan lebih dahulu, Word2Vec dilatih hanya pada teks latih, lalu vektor dokumen uji dibentuk menggunakan embedding hasil data latih. Ini adalah rekomendasi metodologis; kode notebook tidak diubah.</p>
+<section id="id1">
+<h3>Skenario 1: Menghapus Angka<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<p>Model ini memakai fitur dokumen dari preprocessing skenario 1, yaitu angka dihapus, stopword dihilangkan, dan kata di-stemming.</p>
+<p><strong>Pembagian data Skenario 1.</strong> Data fitur <code class="docutils literal notranslate"><span class="pre">X</span></code> dan label <code class="docutils literal notranslate"><span class="pre">y</span></code> dibagi dengan urutan yang sama. Proporsi kelas dijaga melalui <code class="docutils literal notranslate"><span class="pre">stratify</span></code>; hasil prediksi pada bagian test mengukur performa pada dokumen yang tidak digunakan untuk melatih classifier.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
@@ -1244,7 +1552,7 @@ Name: jumlah_kata, dtype: float64
 </div>
 </div>
 </div>
-<p>Membuat Model Skenario 1</p>
+<p><strong>Gaussian Naive Bayes Skenario 1.</strong> <code class="docutils literal notranslate"><span class="pre">fit</span></code> mempelajari hubungan antara 50 fitur embedding dan label kategori dari data latih, kemudian <code class="docutils literal notranslate"><span class="pre">predict</span></code> menghasilkan label untuk data uji. Gaussian Naive Bayes memperkirakan distribusi tiap fitur pada setiap kelas dan mengasumsikan fitur saling independen jika kelas diketahui. Asumsi ini menyederhanakan pemodelan; kinerjanya tetap perlu dinilai pada data uji.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model_nb_skenario1</span> <span class="o">=</span> <span class="n">GaussianNB</span><span class="p">()</span>
@@ -1258,7 +1566,7 @@ Name: jumlah_kata, dtype: float64
 </div>
 </div>
 </div>
-<p>Evaluasi Skenario 1</p>
+<p><strong>Membaca evaluasi Skenario 1.</strong> Accuracy adalah proporsi seluruh prediksi yang benar. Precision mengukur ketepatan prediksi suatu kelas, recall mengukur berapa banyak anggota kelas yang berhasil ditemukan, dan F1 merupakan keseimbangan precision-recall. Laporan klasifikasi menampilkan nilai tersebut untuk tiap kategori. Pada confusion matrix, baris menunjukkan label sebenarnya dan kolom menunjukkan label prediksi; nilai di luar diagonal adalah kesalahan klasifikasi. Gunakan angka keluaran aktual untuk menyimpulkan kelas mana yang lebih mudah atau sulit dikenali.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"=== HASIL EVALUASI NAIVE BAYES (SKENARIO 1) ==="</span><span class="p">)</span>
@@ -1298,9 +1606,10 @@ weighted avg       0.85      0.82      0.82        40
 </div>
 </div>
 </section>
-<section id="skenario-2">
-<h3>Skenario 2<a class="headerlink" href="#skenario-2" title="Link to this heading">#</a></h3>
-<p>Melakukan Split antara data Train &amp; Test Skenario 2</p>
+<section id="skenario-2-angka-dipertahankan">
+<h3>Skenario 2: Angka Dipertahankan<a class="headerlink" href="#skenario-2-angka-dipertahankan" title="Link to this heading">#</a></h3>
+<p>Fitur skenario ini berasal dari preprocessing yang mempertahankan angka, sedangkan tahap lainnya tetap menghapus stopword dan melakukan stemming. Bandingkan hasilnya dengan Skenario 1 menggunakan metrik yang sama. Jangan menyimpulkan angka selalu membantu atau merugikan; pengaruhnya bergantung pada apakah angka dalam artikel membawa informasi untuk membedakan kategori.</p>
+<p><strong>Pembagian data Skenario 2.</strong> Parameter split sama dengan Skenario 1 agar perbandingan lebih adil. <code class="docutils literal notranslate"><span class="pre">stratify=df_skenario_2_y</span></code> menjaga proporsi label kategori saat dokumen dibagi menjadi data latih dan data uji.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
@@ -1313,7 +1622,7 @@ weighted avg       0.85      0.82      0.82        40
 </div>
 </div>
 </div>
-<p>Membuat Model Skenario 1</p>
+<p><strong>Gaussian Naive Bayes Skenario 2.</strong> Classifier dilatih menggunakan <code class="docutils literal notranslate"><span class="pre">df_skenario_2_X</span></code> dan label kategori skenario 2. Tahap <code class="docutils literal notranslate"><span class="pre">fit</span></code> mempelajari pola dari data latih, sedangkan <code class="docutils literal notranslate"><span class="pre">predict</span></code> menguji prediksi pada data uji. Seperti Skenario 1, model mengasumsikan distribusi Gaussian untuk tiap fitur dalam kelas dan independensi bersyarat antarf fitur.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model_nb_skenario1</span> <span class="o">=</span> <span class="n">GaussianNB</span><span class="p">()</span>
@@ -1327,7 +1636,7 @@ weighted avg       0.85      0.82      0.82        40
 </div>
 </div>
 </div>
-<p>Evaluasi Skenario 1</p>
+<p><strong>Membaca evaluasi Skenario 2.</strong> Baca accuracy bersama precision, recall, F1, dan confusion matrix. Bandingkan dengan Skenario 1 pada label serta pembagian data yang sebanding. Selisih metrik menunjukkan perbedaan pada eksperimen ini, tetapi dengan jumlah data terbatas dan embedding yang dipelajari dari korpus kecil, hasilnya belum cukup untuk menyatakan keunggulan umum salah satu preprocessing.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"=== HASIL EVALUASI NAIVE BAYES (SKENARIO 1) ==="</span><span class="p">)</span>
@@ -1367,6 +1676,13 @@ weighted avg       0.84      0.78      0.76        40
 </div>
 </div>
 </section>
+</section>
+<section id="simpulan-dan-catatan-metodologis">
+<h2><strong>Simpulan dan Catatan Metodologis</strong><a class="headerlink" href="#simpulan-dan-catatan-metodologis" title="Link to this heading">#</a></h2>
+<p>Alur penerapan pada notebook ini adalah: artikel scraping dibersihkan menjadi token, token digunakan untuk mempelajari embedding kata melalui Skip-gram, vektor kata dirata-ratakan menjadi satu vektor dokumen, lalu Gaussian Naive Bayes memprediksi kategori berita. CBOW memiliki tujuan yang berlawanan dengan Skip-gram: CBOW memprediksi kata target dari kumpulan kata konteks, sementara Skip-gram memprediksi konteks dari kata target.</p>
+<p>Hasil evaluasi perlu dibaca sesuai batas eksperimennya. Korpus terdiri atas jumlah artikel yang terbatas dibandingkan korpus besar yang biasanya dibutuhkan untuk mempelajari embedding kata yang stabil. Dengan <code class="docutils literal notranslate"><span class="pre">min_count=1</span></code>, kata yang jarang ikut dipelajari meskipun konteksnya sedikit. Selain itu, mean pooling menghilangkan urutan kata dan merangkum setiap token dengan bobot rata-rata.</p>
+<p>Untuk evaluasi yang benar-benar menguji dokumen yang belum terlihat, pembagian train/test sebaiknya dilakukan sebelum melatih Word2Vec. Fit embedding pada dokumen latih saja, lalu gunakan embedding tersebut untuk membentuk fitur dokumen uji; tangani kata uji yang tidak ada dalam vocabulary secara eksplisit. Perubahan ini merupakan saran metodologis dan tidak diterapkan pada kode notebook.</p>
+<p>Saat menyusun kesimpulan tugas, laporkan angka metrik dari output aktual, sebutkan skenario preprocessing yang lebih baik pada eksperimen ini bila memang didukung oleh metrik, dan jelaskan keterbatasannya. Jangan menyamakan hasil dari korpus kecil ini dengan performa Word2Vec secara umum.</p>
 </section>
 </section>
 
@@ -1425,14 +1741,35 @@ weighted avg       0.84      0.78      0.76        40
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-understanding">Data Understanding</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-preprocessing">Data Preprocessing</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modeling-evaluasi">Modeling &amp; Evaluasi</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-1">Skenario 1</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-2">Skenario 2</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#"><strong>Penerapan Word2Vec pada Data Teks Bahasa Indonesia</strong></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#memahami-data-contoh-dan-parameter">Memahami Data Contoh dan Parameter</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cara-kerja-word2vec-skip-gram">Cara Kerja Word2Vec Skip-gram</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#membentuk-pasangan-target-dan-konteks">Membentuk Pasangan Target dan Konteks</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#membaca-vektor-kata-dan-vocabulary">Membaca Vektor Kata dan Vocabulary</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#perbandingan-arsitektur-word2vec-skip-gram-dan-cbow"><strong>Perbandingan Arsitektur Word2Vec: Skip-gram dan CBOW</strong></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-understanding"><strong>Data Understanding</strong></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#memuat-dan-memeriksa-dataset">Memuat dan Memeriksa Dataset</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#eksplorasi-teks-dan-interpretasi-output">Eksplorasi Teks dan Interpretasi Output</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-preprocessing"><strong>Data Preprocessing</strong></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#melatih-embedding-dan-membentuk-fitur-dokumen">Melatih Embedding dan Membentuk Fitur Dokumen</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-1-menghapus-angka">Skenario 1: Menghapus Angka</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-2-mempertahankan-angka">Skenario 2: Mempertahankan Angka</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modeling-dan-evaluasi"><strong>Modeling dan Evaluasi</strong></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Skenario 1: Menghapus Angka</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-2-angka-dipertahankan">Skenario 2: Angka Dipertahankan</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simpulan-dan-catatan-metodologis"><strong>Simpulan dan Catatan Metodologis</strong></a></li>
 </ul>
 </li>
 </ul>
+
   </nav></div>
 
 </div></div>
