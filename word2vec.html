@@ -397,13 +397,19 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#melatih-embedding-dan-membentuk-fitur-dokumen">Melatih Embedding dan Membentuk Fitur Dokumen</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-1-menghapus-angka">Skenario 1: Menghapus Angka</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-2-mempertahankan-angka">Skenario 2: Mempertahankan Angka</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-3-mempertahankan-angka">Skenario 3: Mempertahankan Angka</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-4-mempertahankan-angka">Skenario 4: Mempertahankan Angka</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modeling-dan-evaluasi"><strong>Modeling dan Evaluasi</strong></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Skenario 1: Menghapus Angka</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-2-angka-dipertahankan">Skenario 2: Angka Dipertahankan</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-3">Skenario 3:</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-4">Skenario 4:</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-5">Skenario 5:</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#perbandingan-semua-skenario">Perbandingan Semua Skenario</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simpulan-dan-catatan-metodologis"><strong>Simpulan dan Catatan Metodologis</strong></a></li>
 </ul>
 </li>
@@ -1017,7 +1023,7 @@ Name: jumlah_kata, dtype: float64
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Membuat WordCloud...
 </pre></div>
 </div>
-<img alt="_images/ff69465244c4d57f763ee9b64793c2f20389d6347b33471255a913bbc4c3d22c.png" src="_images/ff69465244c4d57f763ee9b64793c2f20389d6347b33471255a913bbc4c3d22c.png" />
+<img alt="_images/6a9c70bbacf136b9b1698cff3c13d10ba04d3822def01e174f76ff29bcfe0643.png" src="_images/6a9c70bbacf136b9b1698cff3c13d10ba04d3822def01e174f76ff29bcfe0643.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1152,6 +1158,44 @@ Name: jumlah_kata, dtype: float64
 </div>
 </div>
 </div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">tuning_w2v_naive_bayes</span><span class="p">(</span><span class="n">tokens_series</span><span class="p">,</span> <span class="n">target_series</span><span class="p">,</span> <span class="n">list_vektor</span><span class="p">,</span> <span class="n">list_window</span><span class="p">,</span> <span class="n">list_smoothing</span><span class="p">):</span>
+    <span class="n">hasil</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># Matatikan log gensim agar output loop tidak terlalu penuh</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span> 
+    
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">list_vektor</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">list_window</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Melatih Skip-gram (Vektor=</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">, Window=</span><span class="si">{</span><span class="n">w</span><span class="si">}</span><span class="s2">)..."</span><span class="p">)</span>
+            <span class="c1"># 1. Latih Word2Vec</span>
+            <span class="n">model_w2v</span> <span class="o">=</span> <span class="n">latih_skipgram</span><span class="p">(</span><span class="n">tokens_series</span><span class="p">,</span> <span class="n">ukuran_vektor</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">ukuran_window</span><span class="o">=</span><span class="n">w</span><span class="p">)</span>
+            
+            <span class="c1"># 2. Mean Pooling</span>
+            <span class="n">fitur_X</span> <span class="o">=</span> <span class="n">tokens_series</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">get_vektor_rata_rata</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">model_w2v</span><span class="p">))</span>
+            <span class="n">X_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">fitur_X</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+            
+            <span class="c1"># 3. Split Data</span>
+            <span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+                <span class="n">X_df</span><span class="p">,</span> <span class="n">target_series</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">target_series</span>
+            <span class="p">)</span>
+            
+            <span class="c1"># 4. Tuning Naive Bayes</span>
+            <span class="k">for</span> <span class="n">smooth</span> <span class="ow">in</span> <span class="n">list_smoothing</span><span class="p">:</span>
+                <span class="n">nb</span> <span class="o">=</span> <span class="n">GaussianNB</span><span class="p">(</span><span class="n">var_smoothing</span><span class="o">=</span><span class="n">smooth</span><span class="p">)</span>
+                <span class="n">nb</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+                <span class="n">akurasi</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">nb</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">))</span>
+                
+                <span class="n">hasil</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                    <span class="s1">'Vector_Size'</span><span class="p">:</span> <span class="n">v</span><span class="p">,</span> <span class="s1">'Window'</span><span class="p">:</span> <span class="n">w</span><span class="p">,</span> 
+                    <span class="s1">'Var_Smoothing'</span><span class="p">:</span> <span class="n">smooth</span><span class="p">,</span> <span class="s1">'Akurasi'</span><span class="p">:</span> <span class="n">akurasi</span>
+                <span class="p">})</span>
+                
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">hasil</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">'Akurasi'</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
 <section id="melatih-embedding-dan-membentuk-fitur-dokumen">
 <h3>Melatih Embedding dan Membentuk Fitur Dokumen<a class="headerlink" href="#melatih-embedding-dan-membentuk-fitur-dokumen" title="Link to this heading">#</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">latih_skipgram</span></code> melatih Word2Vec dari kumpulan list token. Pada penerapan ini, <code class="docutils literal notranslate"><span class="pre">ukuran_vektor=50</span></code> berarti setiap kata memiliki 50 komponen, <code class="docutils literal notranslate"><span class="pre">ukuran_window=3</span></code> menggunakan konteks hingga tiga posisi di sekitar target, dan <code class="docutils literal notranslate"><span class="pre">sg=1</span></code> memilih Skip-gram. <code class="docutils literal notranslate"><span class="pre">min_count=1</span></code> mempertahankan kata yang hanya muncul sekali; ini mencegah kata hilang dari vocabulary, tetapi pada korpus kecil dapat memasukkan banyak kata langka dengan vektor yang kurang terlatih.</p>
@@ -1188,31 +1232,25 @@ Name: jumlah_kata, dtype: float64
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1. Memulai Preprocessing Skenario 1 (Ini akan memakan waktu karena Stemming)...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  0%|                                                                                                                                                       | 0/200 [00:00&lt;?, ?it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  0%|                                                                                                                                                        | 0/200 [00:00&lt;?, ?it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  1%|█▍                                                                                                                                             | 2/200 [00:03&lt;05:23,  1.64s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  1%|█▍                                                                                                                                              | 2/200 [00:05&lt;09:17,  2.81s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  2%|██▏                                                                                                                                            | 3/200 [00:06&lt;07:00,  2.14s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  2%|██▏                                                                                                                                             | 3/200 [00:10&lt;11:52,  3.62s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  2%|██▊                                                                                                                                            | 4/200 [00:11&lt;11:04,  3.39s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  2%|██▉                                                                                                                                             | 4/200 [00:19&lt;18:22,  5.63s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  2%|███▌                                                                                                                                           | 5/200 [00:13&lt;09:22,  2.88s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  2%|███▌                                                                                                                                            | 5/200 [00:22&lt;15:09,  4.66s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  3%|████▎                                                                                                                                          | 6/200 [00:16&lt;09:02,  2.79s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  3%|████▎                                                                                                                                           | 6/200 [00:26&lt;14:31,  4.49s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  4%|█████                                                                                                                                          | 7/200 [00:22&lt;12:53,  4.01s/it]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  4%|█████▋                                                                                                                                         | 8/200 [00:26&lt;12:29,  3.90s/it]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  4%|█████▋                                                                                                                                         | 8/200 [00:29&lt;11:59,  3.75s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  3%|████▎                                                                                                                                           | 6/200 [00:29&lt;16:09,  5.00s/it]
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
@@ -1220,7 +1258,7 @@ Name: jumlah_kata, dtype: float64
 </div>
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">29</span><span class="p">],</span> <span class="n">line</span> <span class="mi">3</span>
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">30</span><span class="p">],</span> <span class="n">line</span> <span class="mi">3</span>
 <span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="c1"># Preprocessing Penuh (Hapus Angka, Stopword, Stemming)</span>
 <span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="nb">print</span><span class="p">(</span><span class="s2">"1. Memulai Preprocessing Skenario 1 (Ini akan memakan waktu karena Stemming)..."</span><span class="p">)</span>
 <span class="ne">----&gt; </span><span class="mi">3</span> <span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_1'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_all</span><span class="p">[</span><span class="s1">'teks'</span><span class="p">]</span><span class="o">.</span><span class="n">progress_apply</span><span class="p">(</span>
@@ -1302,7 +1340,7 @@ Name: jumlah_kata, dtype: float64
 <span class="g g-Whitespace">    </span><span class="mi">917</span>     <span class="n">t</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">1</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">t</span><span class="o">.</span><span class="n">total</span> <span class="ow">or</span> <span class="n">t</span><span class="o">.</span><span class="n">n</span> <span class="o">&lt;</span> <span class="n">t</span><span class="o">.</span><span class="n">total</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
 <span class="ne">--&gt; </span><span class="mi">918</span>     <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-<span class="nn">Cell In[29], line 4,</span> in <span class="ni">&lt;lambda&gt;</span><span class="nt">(x)</span>
+<span class="nn">Cell In[30], line 4,</span> in <span class="ni">&lt;lambda&gt;</span><span class="nt">(x)</span>
 <span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="c1"># Preprocessing Penuh (Hapus Angka, Stopword, Stemming)</span>
 <span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="nb">print</span><span class="p">(</span><span class="s2">"1. Memulai Preprocessing Skenario 1 (Ini akan memakan waktu karena Stemming)..."</span><span class="p">)</span>
 <span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_1'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_all</span><span class="p">[</span><span class="s1">'teks'</span><span class="p">]</span><span class="o">.</span><span class="n">progress_apply</span><span class="p">(</span>
@@ -1372,33 +1410,12 @@ Name: jumlah_kata, dtype: float64
 <span class="g g-Whitespace">     </span><span class="mi">96</span> <span class="k">def</span><span class="w"> </span><span class="nf">accept</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">visitor</span><span class="p">):</span>
 <span class="ne">---&gt; </span><span class="mi">97</span>     <span class="n">visitor</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
-<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/site-packages/Sastrawi/Stemmer/Context/Visitor/RemovePlainPrefix.py:12,</span> in <span class="ni">RemovePlainPrefix.visit</span><span class="nt">(self, context)</span>
-<span class="g g-Whitespace">     </span><span class="mi">11</span> <span class="k">def</span><span class="w"> </span><span class="nf">visit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
-<span class="ne">---&gt; </span><span class="mi">12</span>     <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">current_word</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">13</span>     <span class="k">if</span> <span class="n">result</span> <span class="o">!=</span> <span class="n">context</span><span class="o">.</span><span class="n">current_word</span><span class="p">:</span>
-<span class="g g-Whitespace">     </span><span class="mi">14</span>         <span class="n">removedPart</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s1">''</span><span class="p">,</span> <span class="n">context</span><span class="o">.</span><span class="n">current_word</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-
-<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/site-packages/Sastrawi/Stemmer/Context/Visitor/RemovePlainPrefix.py:23,</span> in <span class="ni">RemovePlainPrefix.remove</span><span class="nt">(self, word)</span>
-<span class="g g-Whitespace">     </span><span class="mi">21</span> <span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">word</span><span class="p">):</span>
-<span class="g g-Whitespace">     </span><span class="mi">22</span><span class="w">     </span><span class="sd">"""Remove plain prefix : di|ke|se"""</span>
-<span class="ne">---&gt; </span><span class="mi">23</span>     <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">'^(di|ke|se)'</span><span class="p">,</span> <span class="s1">''</span><span class="p">,</span> <span class="n">word</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-
-<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/re.py:209,</span> in <span class="ni">sub</span><span class="nt">(pattern, repl, string, count, flags)</span>
-<span class="g g-Whitespace">    </span><span class="mi">202</span> <span class="k">def</span><span class="w"> </span><span class="nf">sub</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">repl</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-<span class="g g-Whitespace">    </span><span class="mi">203</span><span class="w">     </span><span class="sd">"""Return the string obtained by replacing the leftmost</span>
-<span class="g g-Whitespace">    </span><span class="mi">204</span><span class="sd">     non-overlapping occurrences of the pattern in string by the</span>
-<span class="g g-Whitespace">    </span><span class="mi">205</span><span class="sd">     replacement repl.  repl can be either a string or a callable;</span>
-<span class="g g-Whitespace">    </span><span class="mi">206</span><span class="sd">     if a string, backslash escapes in it are processed.  If it is</span>
-<span class="g g-Whitespace">    </span><span class="mi">207</span><span class="sd">     a callable, it's passed the Match object and must return</span>
-<span class="g g-Whitespace">    </span><span class="mi">208</span><span class="sd">     a replacement string to be used."""</span>
-<span class="ne">--&gt; </span><span class="mi">209</span>     <span class="k">return</span> <span class="n">_compile</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">flags</span><span class="p">)</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">repl</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
-
-<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/re.py:290,</span> in <span class="ni">_compile</span><span class="nt">(pattern, flags)</span>
-<span class="g g-Whitespace">    </span><span class="mi">288</span> <span class="k">def</span><span class="w"> </span><span class="nf">_compile</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">flags</span><span class="p">):</span>
-<span class="g g-Whitespace">    </span><span class="mi">289</span>     <span class="c1"># internal: compile pattern</span>
-<span class="ne">--&gt; </span><span class="mi">290</span>     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">flags</span><span class="p">,</span> <span class="n">RegexFlag</span><span class="p">):</span>
-<span class="g g-Whitespace">    </span><span class="mi">291</span>         <span class="n">flags</span> <span class="o">=</span> <span class="n">flags</span><span class="o">.</span><span class="n">value</span>
-<span class="g g-Whitespace">    </span><span class="mi">292</span>     <span class="k">try</span><span class="p">:</span>
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/site-packages/Sastrawi/Stemmer/Context/Visitor/AbstractDisambiguatePrefixRule.py:15,</span> in <span class="ni">AbstractDisambiguatePrefixRule.visit</span><span class="nt">(self, context)</span>
+<span class="g g-Whitespace">     </span><span class="mi">13</span> <span class="k">for</span> <span class="n">disambiguator</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">disambiguators</span><span class="p">:</span>
+<span class="g g-Whitespace">     </span><span class="mi">14</span>     <span class="n">result</span> <span class="o">=</span> <span class="n">disambiguator</span><span class="o">.</span><span class="n">disambiguate</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">current_word</span><span class="p">)</span>
+<span class="ne">---&gt; </span><span class="mi">15</span>     <span class="k">if</span> <span class="n">context</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">result</span><span class="p">):</span>
+<span class="g g-Whitespace">     </span><span class="mi">16</span>         <span class="k">break</span>
+<span class="g g-Whitespace">     </span><span class="mi">18</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
 
 <span class="ne">KeyboardInterrupt</span>: 
 </pre></div>
@@ -1407,55 +1424,149 @@ Name: jumlah_kata, dtype: float64
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">2. Melatih Model Skip-gram..."</span><span class="p">)</span>
-<span class="c1"># Gensim memiliki sistem log tersendiri untuk menampilkan progress pelatihan</span>
-<span class="c1"># Kita aktifkan logger-nya sejenak ke level INFO</span>
-<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s1">'</span><span class="si">%(asctime)s</span><span class="s1"> : </span><span class="si">%(message)s</span><span class="s1">'</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"Memulai Hyperparameter Tuning Skenario 1..."</span><span class="p">)</span>
 
-<span class="n">model_skenario_1</span> <span class="o">=</span> <span class="n">latih_skipgram</span><span class="p">(</span><span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_1'</span><span class="p">],</span> <span class="n">ukuran_vektor</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">ukuran_window</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-
-<span class="c1"># Kembalikan logger ke WARNING agar output tidak kotor setelah selesai</span>
-<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"Pelatihan Skip-gram Selesai!"</span><span class="p">)</span>
-
-
-<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">3. Membuat Vektor Rata-rata Dokumen (Mean Pooling)..."</span><span class="p">)</span>
-<span class="n">fitur_X</span> <span class="o">=</span> <span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_1'</span><span class="p">]</span><span class="o">.</span><span class="n">progress_apply</span><span class="p">(</span>
-    <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">get_vektor_rata_rata</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">model_skenario_1</span><span class="p">)</span>
+<span class="n">hasil_tuning_skenario_1</span> <span class="o">=</span> <span class="n">tuning_w2v_naive_bayes</span><span class="p">(</span>
+    <span class="n">tokens_series</span><span class="o">=</span><span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_1'</span><span class="p">],</span> 
+    <span class="n">target_series</span><span class="o">=</span><span class="n">df_all</span><span class="p">[</span><span class="s1">'kategori'</span><span class="p">],</span> 
+    <span class="n">list_vektor</span><span class="o">=</span><span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>               <span class="c1"># Uji 2 parameter vector size</span>
+    <span class="n">list_window</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span>                  <span class="c1"># Uji 2 parameter window</span>
+    <span class="n">list_smoothing</span><span class="o">=</span><span class="p">[</span><span class="mf">1e-9</span><span class="p">,</span> <span class="mf">1e-5</span><span class="p">,</span> <span class="mf">1e-1</span><span class="p">]</span>    <span class="c1"># Uji 3 parameter Naive Bayes</span>
 <span class="p">)</span>
 
-<span class="c1"># Konversi ke DataFrame</span>
-<span class="n">df_skenario_1_X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">fitur_X</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
-<span class="n">df_skenario_1_y</span> <span class="o">=</span> <span class="n">df_all</span><span class="p">[</span><span class="s1">'kategori'</span><span class="p">]</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Seluruh proses Skenario 1 selesai!"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">=== TOP 5 HASIL KOMBINASI TERBAIK ==="</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">hasil_tuning_skenario_1</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2. Melatih Model Skip-gram...
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Memulai Hyperparameter Tuning Skenario 1...
+Melatih Skip-gram (Vektor=50, Window=3)...
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Pelatihan Skip-gram Selesai!
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Melatih Skip-gram (Vektor=50, Window=5)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Melatih Skip-gram (Vektor=50, Window=7)...
+Melatih Skip-gram (Vektor=75, Window=3)...
+Melatih Skip-gram (Vektor=75, Window=5)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Melatih Skip-gram (Vektor=75, Window=7)...
+Melatih Skip-gram (Vektor=100, Window=3)...
+Melatih Skip-gram (Vektor=100, Window=5)...
+Melatih Skip-gram (Vektor=100, Window=7)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=== TOP 5 HASIL KOMBINASI TERBAIK ===
+</pre></div>
+</div>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
-3. Membuat Vektor Rata-rata Dokumen (Mean Pooling)...
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Vector_Size</th>
+      <th>Window</th>
+      <th>Var_Smoothing</th>
+      <th>Akurasi</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>50</td>
+      <td>3</td>
+      <td>1.000000e-09</td>
+      <td>0.825</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>50</td>
+      <td>3</td>
+      <td>1.000000e-05</td>
+      <td>0.825</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>50</td>
+      <td>5</td>
+      <td>1.000000e-09</td>
+      <td>0.800</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>50</td>
+      <td>5</td>
+      <td>1.000000e-05</td>
+      <td>0.800</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>50</td>
+      <td>3</td>
+      <td>1.000000e-01</td>
+      <td>0.775</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">best_smooth</span> <span class="o">=</span> <span class="n">hasil_tuning_skenario_1</span><span class="p">[</span><span class="s1">'Var_Smoothing'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># Memfilter data hanya untuk var_smoothing terbaik agar bisa dibuat heatmap 2D</span>
+<span class="n">df_heatmap</span> <span class="o">=</span> <span class="n">hasil_tuning_skenario_1</span><span class="p">[</span><span class="n">hasil_tuning_skenario_1</span><span class="p">[</span><span class="s1">'Var_Smoothing'</span><span class="p">]</span> <span class="o">==</span> <span class="n">best_smooth</span><span class="p">]</span>
+
+<span class="c1"># Membuat pivot table: Baris = Window, Kolom = Vector Size, Nilai = Akurasi</span>
+<span class="n">pivot_table</span> <span class="o">=</span> <span class="n">df_heatmap</span><span class="o">.</span><span class="n">pivot</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s1">'Window'</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s1">'Vector_Size'</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s1">'Akurasi'</span><span class="p">)</span>
+
+<span class="c1"># Menggambar Heatmap</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span><span class="n">pivot_table</span><span class="p">,</span> <span class="n">annot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">'.4f'</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">'YlGnBu'</span><span class="p">,</span> <span class="n">cbar_kws</span><span class="o">=</span><span class="p">{</span><span class="s1">'label'</span><span class="p">:</span> <span class="s1">'Akurasi'</span><span class="p">})</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Heatmap Akurasi Word2Vec</span><span class="se">\n</span><span class="s1">(Optimal Var_Smoothing: </span><span class="si">{</span><span class="n">best_smooth</span><span class="si">}</span><span class="s1">)'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">'Vector Size (Dimensi)'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">'Window Size (Konteks)'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████| 200/200 [00:00&lt;00:00, 1079.51it/s]
-</pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Seluruh proses Skenario 1 selesai!
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
+<div class="cell_output docutils container">
+<img alt="_images/3e3055ef3edd33c66eaa3a8b415d359c851a3eef423c74a6ed9c366fffcd6e9c.png" src="_images/3e3055ef3edd33c66eaa3a8b415d359c851a3eef423c74a6ed9c366fffcd6e9c.png" />
 </div>
 </div>
 <p>Setelah model Skip-gram dilatih, setiap artikel diubah menjadi satu vektor rata-rata. <code class="docutils literal notranslate"><span class="pre">df_skenario_1_X</span></code> berisi fitur numerik dokumen, sedangkan <code class="docutils literal notranslate"><span class="pre">df_skenario_1_y</span></code> berisi label kategori dengan urutan baris yang sama. Pada <code class="docutils literal notranslate"><span class="pre">ukuran_vektor=50</span></code>, setiap artikel direpresentasikan oleh 50 fitur. Nilai fitur bukan lagi kata yang dapat dibaca langsung, melainkan ringkasan hasil embedding kata.</p>
+</section>
+<section id="skenario-2-mempertahankan-angka">
+<h3>Skenario 2: Mempertahankan Angka<a class="headerlink" href="#skenario-2-mempertahankan-angka" title="Link to this heading">#</a></h3>
+<p>Skenario 2 mengatur <code class="docutils literal notranslate"><span class="pre">hapus_angka=False</span></code>, sementara stopword removal dan stemming tetap aktif. Perbandingan dengan skenario 1 membantu melihat apakah informasi angka berpengaruh pada klasifikasi berita. Pastikan kedua skenario memakai data, pembagian train/test, dan pengaturan model yang sebanding agar perbedaan evaluasi dapat dikaitkan dengan preprocessing.</p>
+<p>Perlu dicatat, blok kode ini menimpa nama variabel model generik yang sama, tetapi membentuk fitur skenario 2 dari <code class="docutils literal notranslate"><span class="pre">token_skenario_2</span></code>. Nama objek dan pesan yang masih menyebut skenario 1 merupakan hal yang dapat membingungkan saat membaca output; di sini penjelasan membedakan hasil berdasarkan kolom fitur yang digunakan.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Skenario 2: Pertahankan Angka, Hapus Stopword, Stemming</span>
@@ -1470,66 +1581,501 @@ Name: jumlah_kata, dtype: float64
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2. Memulai Preprocessing Skenario 2...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████| 200/200 [00:00&lt;00:00, 1039.34it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████| 200/200 [00:33&lt;00:00,  6.00it/s]
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">2. Melatih Model Skip-gram..."</span><span class="p">)</span>
-<span class="c1"># Gensim memiliki sistem log tersendiri untuk menampilkan progress pelatihan</span>
-<span class="c1"># Kita aktifkan logger-nya sejenak ke level INFO</span>
-<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s1">'</span><span class="si">%(asctime)s</span><span class="s1"> : </span><span class="si">%(message)s</span><span class="s1">'</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"Memulai Hyperparameter Tuning Skenario 2..."</span><span class="p">)</span>
 
-<span class="n">model_skenario_1</span> <span class="o">=</span> <span class="n">latih_skipgram</span><span class="p">(</span><span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_2'</span><span class="p">],</span> <span class="n">ukuran_vektor</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">ukuran_window</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-
-<span class="c1"># Kembalikan logger ke WARNING agar output tidak kotor setelah selesai</span>
-<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"Pelatihan Skip-gram Selesai!"</span><span class="p">)</span>
-
-
-<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">3. Membuat Vektor Rata-rata Dokumen (Mean Pooling)..."</span><span class="p">)</span>
-<span class="n">fitur_X</span> <span class="o">=</span> <span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_2'</span><span class="p">]</span><span class="o">.</span><span class="n">progress_apply</span><span class="p">(</span>
-    <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">get_vektor_rata_rata</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">model_skenario_1</span><span class="p">)</span>
+<span class="n">hasil_tuning_skenario_2</span> <span class="o">=</span> <span class="n">tuning_w2v_naive_bayes</span><span class="p">(</span>
+    <span class="n">tokens_series</span><span class="o">=</span><span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_2'</span><span class="p">],</span> 
+    <span class="n">target_series</span><span class="o">=</span><span class="n">df_all</span><span class="p">[</span><span class="s1">'kategori'</span><span class="p">],</span> 
+    <span class="n">list_vektor</span><span class="o">=</span><span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>               <span class="c1"># Uji 2 parameter vector size</span>
+    <span class="n">list_window</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span>                  <span class="c1"># Uji 2 parameter window</span>
+    <span class="n">list_smoothing</span><span class="o">=</span><span class="p">[</span><span class="mf">1e-9</span><span class="p">,</span> <span class="mf">1e-5</span><span class="p">,</span> <span class="mf">1e-1</span><span class="p">]</span>    <span class="c1"># Uji 3 parameter Naive Bayes</span>
 <span class="p">)</span>
 
-<span class="c1"># Konversi ke DataFrame</span>
-<span class="n">df_skenario_2_X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">fitur_X</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
-<span class="n">df_skenario_2_y</span> <span class="o">=</span> <span class="n">df_all</span><span class="p">[</span><span class="s1">'kategori'</span><span class="p">]</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Seluruh proses Skenario 2 selesai!"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">=== TOP 5 HASIL KOMBINASI TERBAIK ==="</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">hasil_tuning_skenario_2</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2. Melatih Model Skip-gram...
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Memulai Hyperparameter Tuning Skenario 2...
+Melatih Skip-gram (Vektor=50, Window=3)...
+Melatih Skip-gram (Vektor=50, Window=5)...
+Melatih Skip-gram (Vektor=50, Window=7)...
+Melatih Skip-gram (Vektor=75, Window=3)...
+Melatih Skip-gram (Vektor=75, Window=5)...
+Melatih Skip-gram (Vektor=75, Window=7)...
+Melatih Skip-gram (Vektor=100, Window=3)...
+Melatih Skip-gram (Vektor=100, Window=5)...
+Melatih Skip-gram (Vektor=100, Window=7)...
+
+=== TOP 5 HASIL KOMBINASI TERBAIK ===
+</pre></div>
+</div>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Vector_Size</th>
+      <th>Window</th>
+      <th>Var_Smoothing</th>
+      <th>Akurasi</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>50</td>
+      <td>7</td>
+      <td>1.000000e-09</td>
+      <td>0.85</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>50</td>
+      <td>7</td>
+      <td>1.000000e-05</td>
+      <td>0.85</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>50</td>
+      <td>3</td>
+      <td>1.000000e-09</td>
+      <td>0.80</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>50</td>
+      <td>5</td>
+      <td>1.000000e-01</td>
+      <td>0.80</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>50</td>
+      <td>3</td>
+      <td>1.000000e-05</td>
+      <td>0.80</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="skenario-3-mempertahankan-angka">
+<h3>Skenario 3: Mempertahankan Angka<a class="headerlink" href="#skenario-3-mempertahankan-angka" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Skenario 3: Pertahankan Angka, Hapus Stopword, Stemming</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"3. Memulai Preprocessing Skenario 3..."</span><span class="p">)</span>
+<span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_3'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_all</span><span class="p">[</span><span class="s1">'teks'</span><span class="p">]</span><span class="o">.</span><span class="n">progress_apply</span><span class="p">(</span>
+    <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">preprocess_modular</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">hapus_angka</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hapus_stopword</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">pakai_stemming</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>3. Memulai Preprocessing Skenario 3...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████| 200/200 [00:01&lt;00:00, 173.61it/s]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"Memulai Hyperparameter Tuning Skenario 3..."</span><span class="p">)</span>
+
+<span class="n">hasil_tuning_skenario_3</span> <span class="o">=</span> <span class="n">tuning_w2v_naive_bayes</span><span class="p">(</span>
+    <span class="n">tokens_series</span><span class="o">=</span><span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_3'</span><span class="p">],</span> 
+    <span class="n">target_series</span><span class="o">=</span><span class="n">df_all</span><span class="p">[</span><span class="s1">'kategori'</span><span class="p">],</span> 
+    <span class="n">list_vektor</span><span class="o">=</span><span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>               <span class="c1"># Uji 2 parameter vector size</span>
+    <span class="n">list_window</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span>                  <span class="c1"># Uji 2 parameter window</span>
+    <span class="n">list_smoothing</span><span class="o">=</span><span class="p">[</span><span class="mf">1e-9</span><span class="p">,</span> <span class="mf">1e-5</span><span class="p">,</span> <span class="mf">1e-1</span><span class="p">]</span>    <span class="c1"># Uji 3 parameter Naive Bayes</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">=== TOP 5 HASIL KOMBINASI TERBAIK ==="</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">hasil_tuning_skenario_3</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Memulai Hyperparameter Tuning Skenario 3...
+Melatih Skip-gram (Vektor=50, Window=3)...
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Pelatihan Skip-gram Selesai!
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Melatih Skip-gram (Vektor=50, Window=5)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Melatih Skip-gram (Vektor=50, Window=7)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Melatih Skip-gram (Vektor=75, Window=3)...
+Melatih Skip-gram (Vektor=75, Window=5)...
+Melatih Skip-gram (Vektor=75, Window=7)...
+Melatih Skip-gram (Vektor=100, Window=3)...
+Melatih Skip-gram (Vektor=100, Window=5)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Melatih Skip-gram (Vektor=100, Window=7)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=== TOP 5 HASIL KOMBINASI TERBAIK ===
+</pre></div>
+</div>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
-3. Membuat Vektor Rata-rata Dokumen (Mean Pooling)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████| 200/200 [00:00&lt;00:00, 1051.57it/s]
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Seluruh proses Skenario 2 selesai!
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-</div>
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Vector_Size</th>
+      <th>Window</th>
+      <th>Var_Smoothing</th>
+      <th>Akurasi</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>100</td>
+      <td>3</td>
+      <td>1.000000e-01</td>
+      <td>0.775</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>100</td>
+      <td>3</td>
+      <td>1.000000e-09</td>
+      <td>0.775</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>75</td>
+      <td>3</td>
+      <td>1.000000e-01</td>
+      <td>0.775</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>100</td>
+      <td>3</td>
+      <td>1.000000e-05</td>
+      <td>0.775</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>50</td>
+      <td>5</td>
+      <td>1.000000e-05</td>
+      <td>0.750</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
 </div>
 </section>
-<section id="skenario-2-mempertahankan-angka">
-<h3>Skenario 2: Mempertahankan Angka<a class="headerlink" href="#skenario-2-mempertahankan-angka" title="Link to this heading">#</a></h3>
-<p>Skenario 2 mengatur <code class="docutils literal notranslate"><span class="pre">hapus_angka=False</span></code>, sementara stopword removal dan stemming tetap aktif. Perbandingan dengan skenario 1 membantu melihat apakah informasi angka berpengaruh pada klasifikasi berita. Pastikan kedua skenario memakai data, pembagian train/test, dan pengaturan model yang sebanding agar perbedaan evaluasi dapat dikaitkan dengan preprocessing.</p>
-<p>Perlu dicatat, blok kode ini menimpa nama variabel model generik yang sama, tetapi membentuk fitur skenario 2 dari <code class="docutils literal notranslate"><span class="pre">token_skenario_2</span></code>. Nama objek dan pesan yang masih menyebut skenario 1 merupakan hal yang dapat membingungkan saat membaca output; di sini penjelasan membedakan hasil berdasarkan kolom fitur yang digunakan.</p>
+<section id="skenario-4-mempertahankan-angka">
+<h3>Skenario 4: Mempertahankan Angka<a class="headerlink" href="#skenario-4-mempertahankan-angka" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Skenario 4: Pertahankan Angka, Hapus Stopword, Stemming</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"4. Memulai Preprocessing Skenario 4..."</span><span class="p">)</span>
+<span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_4'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_all</span><span class="p">[</span><span class="s1">'teks'</span><span class="p">]</span><span class="o">.</span><span class="n">progress_apply</span><span class="p">(</span>
+    <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">preprocess_modular</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">hapus_angka</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hapus_stopword</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pakai_stemming</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>4. Memulai Preprocessing Skenario 4...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████| 200/200 [00:00&lt;00:00, 3556.91it/s]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"Memulai Hyperparameter Tuning Skenario 4..."</span><span class="p">)</span>
+
+<span class="n">hasil_tuning_skenario_4</span> <span class="o">=</span> <span class="n">tuning_w2v_naive_bayes</span><span class="p">(</span>
+    <span class="n">tokens_series</span><span class="o">=</span><span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_4'</span><span class="p">],</span> 
+    <span class="n">target_series</span><span class="o">=</span><span class="n">df_all</span><span class="p">[</span><span class="s1">'kategori'</span><span class="p">],</span> 
+    <span class="n">list_vektor</span><span class="o">=</span><span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>               <span class="c1"># Uji 2 parameter vector size</span>
+    <span class="n">list_window</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span>                  <span class="c1"># Uji 2 parameter window</span>
+    <span class="n">list_smoothing</span><span class="o">=</span><span class="p">[</span><span class="mf">1e-9</span><span class="p">,</span> <span class="mf">1e-5</span><span class="p">,</span> <span class="mf">1e-1</span><span class="p">]</span>    <span class="c1"># Uji 3 parameter Naive Bayes</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">=== TOP 5 HASIL KOMBINASI TERBAIK ==="</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">hasil_tuning_skenario_4</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Memulai Hyperparameter Tuning Skenario 4...
+Melatih Skip-gram (Vektor=50, Window=3)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Melatih Skip-gram (Vektor=50, Window=5)...
+Melatih Skip-gram (Vektor=50, Window=7)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Melatih Skip-gram (Vektor=75, Window=3)...
+Melatih Skip-gram (Vektor=75, Window=5)...
+Melatih Skip-gram (Vektor=75, Window=7)...
+Melatih Skip-gram (Vektor=100, Window=3)...
+Melatih Skip-gram (Vektor=100, Window=5)...
+Melatih Skip-gram (Vektor=100, Window=7)...
+
+=== TOP 5 HASIL KOMBINASI TERBAIK ===
+</pre></div>
+</div>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Vector_Size</th>
+      <th>Window</th>
+      <th>Var_Smoothing</th>
+      <th>Akurasi</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>75</td>
+      <td>3</td>
+      <td>1.000000e-09</td>
+      <td>0.8</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>75</td>
+      <td>3</td>
+      <td>1.000000e-05</td>
+      <td>0.8</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>75</td>
+      <td>5</td>
+      <td>1.000000e-09</td>
+      <td>0.8</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>100</td>
+      <td>7</td>
+      <td>1.000000e-05</td>
+      <td>0.8</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>100</td>
+      <td>7</td>
+      <td>1.000000e-09</td>
+      <td>0.8</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Skenario 5: Pertahankan Angka, Hapus Stopword, Stemming</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"5. Memulai Preprocessing Skenario 5..."</span><span class="p">)</span>
+<span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_5'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_all</span><span class="p">[</span><span class="s1">'teks'</span><span class="p">]</span><span class="o">.</span><span class="n">progress_apply</span><span class="p">(</span>
+    <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">preprocess_modular</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">hapus_angka</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">hapus_stopword</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">pakai_stemming</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>5. Memulai Preprocessing Skenario 5...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████| 200/200 [00:00&lt;00:00, 1463.78it/s]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"Memulai Hyperparameter Tuning Skenario 5..."</span><span class="p">)</span>
+
+<span class="n">hasil_tuning_skenario_5</span> <span class="o">=</span> <span class="n">tuning_w2v_naive_bayes</span><span class="p">(</span>
+    <span class="n">tokens_series</span><span class="o">=</span><span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_5'</span><span class="p">],</span> 
+    <span class="n">target_series</span><span class="o">=</span><span class="n">df_all</span><span class="p">[</span><span class="s1">'kategori'</span><span class="p">],</span> 
+    <span class="n">list_vektor</span><span class="o">=</span><span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>               <span class="c1"># Uji 2 parameter vector size</span>
+    <span class="n">list_window</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span>                  <span class="c1"># Uji 2 parameter window</span>
+    <span class="n">list_smoothing</span><span class="o">=</span><span class="p">[</span><span class="mf">1e-9</span><span class="p">,</span> <span class="mf">1e-5</span><span class="p">,</span> <span class="mf">1e-1</span><span class="p">]</span>    <span class="c1"># Uji 3 parameter Naive Bayes</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">=== TOP 5 HASIL KOMBINASI TERBAIK ==="</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">hasil_tuning_skenario_5</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Memulai Hyperparameter Tuning Skenario 5...
+Melatih Skip-gram (Vektor=50, Window=3)...
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Melatih Skip-gram (Vektor=50, Window=5)...
+Melatih Skip-gram (Vektor=50, Window=7)...
+Melatih Skip-gram (Vektor=75, Window=3)...
+Melatih Skip-gram (Vektor=75, Window=5)...
+Melatih Skip-gram (Vektor=75, Window=7)...
+Melatih Skip-gram (Vektor=100, Window=3)...
+Melatih Skip-gram (Vektor=100, Window=5)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Melatih Skip-gram (Vektor=100, Window=7)...
+
+=== TOP 5 HASIL KOMBINASI TERBAIK ===
+</pre></div>
+</div>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Vector_Size</th>
+      <th>Window</th>
+      <th>Var_Smoothing</th>
+      <th>Akurasi</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>75</td>
+      <td>3</td>
+      <td>1.000000e-09</td>
+      <td>0.775</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>75</td>
+      <td>3</td>
+      <td>1.000000e-05</td>
+      <td>0.775</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>100</td>
+      <td>3</td>
+      <td>1.000000e-09</td>
+      <td>0.775</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>100</td>
+      <td>3</td>
+      <td>1.000000e-05</td>
+      <td>0.775</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>50</td>
+      <td>3</td>
+      <td>1.000000e-05</td>
+      <td>0.750</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
 </section>
 </section>
 <section id="modeling-dan-evaluasi">
@@ -1542,11 +2088,38 @@ Name: jumlah_kata, dtype: float64
 <p><strong>Pembagian data Skenario 1.</strong> Data fitur <code class="docutils literal notranslate"><span class="pre">X</span></code> dan label <code class="docutils literal notranslate"><span class="pre">y</span></code> dibagi dengan urutan yang sama. Proporsi kelas dijaga melalui <code class="docutils literal notranslate"><span class="pre">stratify</span></code>; hasil prediksi pada bagian test mengukur performa pada dokumen yang tidak digunakan untuk melatih classifier.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
-    <span class="n">df_skenario_1_X</span><span class="p">,</span> <span class="n">df_skenario_1_y</span><span class="p">,</span> 
-    <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> 
-    <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span> 
-    <span class="n">stratify</span><span class="o">=</span><span class="n">df_skenario_1_y</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"=== PEMODELAN FINAL DENGAN PARAMETER TERBAIK ==="</span><span class="p">)</span>
+<span class="n">best_v1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">hasil_tuning_skenario_1</span><span class="p">[</span><span class="s1">'Vector_Size'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">best_w1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">hasil_tuning_skenario_1</span><span class="p">[</span><span class="s1">'Window'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">best_s1</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">hasil_tuning_skenario_1</span><span class="p">[</span><span class="s1">'Var_Smoothing'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Menggunakan Parameter -&gt; Vector: </span><span class="si">{</span><span class="n">best_v1</span><span class="si">}</span><span class="s2">, Window: </span><span class="si">{</span><span class="n">best_w1</span><span class="si">}</span><span class="s2">, Smoothing: </span><span class="si">{</span><span class="n">best_s1</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=== PEMODELAN FINAL DENGAN PARAMETER TERBAIK ===
+Menggunakan Parameter -&gt; Vector: 50, Window: 3, Smoothing: 1e-09
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. Ekstraksi Fitur Ulang dengan Parameter Terbaik</span>
+<span class="n">model_w2v_final_s1</span> <span class="o">=</span> <span class="n">latih_skipgram</span><span class="p">(</span><span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_1'</span><span class="p">],</span> <span class="n">ukuran_vektor</span><span class="o">=</span><span class="n">best_v1</span><span class="p">,</span> <span class="n">ukuran_window</span><span class="o">=</span><span class="n">best_w1</span><span class="p">)</span>
+<span class="n">fitur_X_final_s1</span> <span class="o">=</span> <span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_1'</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">get_vektor_rata_rata</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">model_w2v_final_s1</span><span class="p">))</span>
+<span class="n">X_df_final_s1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">fitur_X_final_s1</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<span class="n">y_df_final_s1</span> <span class="o">=</span> <span class="n">df_all</span><span class="p">[</span><span class="s1">'kategori'</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 2. Split Data Skenario 1</span>
+<span class="n">X_train_s1</span><span class="p">,</span> <span class="n">X_test_s1</span><span class="p">,</span> <span class="n">y_train_s1</span><span class="p">,</span> <span class="n">y_test_s1</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+    <span class="n">X_df_final_s1</span><span class="p">,</span> <span class="n">y_df_final_s1</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">y_df_final_s1</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -1555,13 +2128,10 @@ Name: jumlah_kata, dtype: float64
 <p><strong>Gaussian Naive Bayes Skenario 1.</strong> <code class="docutils literal notranslate"><span class="pre">fit</span></code> mempelajari hubungan antara 50 fitur embedding dan label kategori dari data latih, kemudian <code class="docutils literal notranslate"><span class="pre">predict</span></code> menghasilkan label untuk data uji. Gaussian Naive Bayes memperkirakan distribusi tiap fitur pada setiap kelas dan mengasumsikan fitur saling independen jika kelas diketahui. Asumsi ini menyederhanakan pemodelan; kinerjanya tetap perlu dinilai pada data uji.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model_nb_skenario1</span> <span class="o">=</span> <span class="n">GaussianNB</span><span class="p">()</span>
-
-<span class="c1"># 3. Melatih Model dengan Data Latih</span>
-<span class="n">model_nb_skenario1</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
-
-<span class="c1"># 4. Memprediksi Data Uji</span>
-<span class="n">y_pred</span> <span class="o">=</span> <span class="n">model_nb_skenario1</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 3. Latih Model Naive Bayes Final</span>
+<span class="n">nb_final_s1</span> <span class="o">=</span> <span class="n">GaussianNB</span><span class="p">(</span><span class="n">var_smoothing</span><span class="o">=</span><span class="n">best_s</span><span class="p">)</span>
+<span class="n">nb_final_s1</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train_s1</span><span class="p">,</span> <span class="n">y_train_s1</span><span class="p">)</span>
+<span class="n">y_pred_final_s1</span> <span class="o">=</span> <span class="n">nb_final_s1</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test_s1</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1570,16 +2140,16 @@ Name: jumlah_kata, dtype: float64
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"=== HASIL EVALUASI NAIVE BAYES (SKENARIO 1) ==="</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Akurasi Model : </span><span class="si">{</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Akurasi Model : </span><span class="si">{</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test_s1</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred_final_s1</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">"Laporan Klasifikasi Detail:"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">classification_report</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">classification_report</span><span class="p">(</span><span class="n">y_test_s1</span><span class="p">,</span> <span class="n">y_pred_final_s1</span><span class="p">))</span>
 
 <span class="c1"># 6. Visualisasi Confusion Matrix (Opsional, sangat bagus untuk laporan)</span>
-<span class="n">cm</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+<span class="n">cm</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">y_test_s1</span><span class="p">,</span> <span class="n">y_pred_final_s1</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
 <span class="n">sns</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span><span class="n">cm</span><span class="p">,</span> <span class="n">annot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">'d'</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">'Blues'</span><span class="p">,</span> 
-            <span class="n">xticklabels</span><span class="o">=</span><span class="n">model_nb_skenario1</span><span class="o">.</span><span class="n">classes_</span><span class="p">,</span> 
-            <span class="n">yticklabels</span><span class="o">=</span><span class="n">model_nb_skenario1</span><span class="o">.</span><span class="n">classes_</span><span class="p">)</span>
+            <span class="n">xticklabels</span><span class="o">=</span><span class="n">nb_final_s1</span><span class="o">.</span><span class="n">classes_</span><span class="p">,</span> 
+            <span class="n">yticklabels</span><span class="o">=</span><span class="n">nb_final_s1</span><span class="o">.</span><span class="n">classes_</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">'Confusion Matrix - Skenario 1'</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">'Label Sebenarnya'</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">'Label Prediksi'</span><span class="p">)</span>
@@ -1589,20 +2159,63 @@ Name: jumlah_kata, dtype: float64
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=== HASIL EVALUASI NAIVE BAYES (SKENARIO 1) ===
-Akurasi Model : 82.50%
+Akurasi Model : 85.00%
 
 Laporan Klasifikasi Detail:
               precision    recall  f1-score   support
 
-     finance       0.76      0.95      0.84        20
-       sport       0.93      0.70      0.80        20
+     finance       0.79      0.95      0.86        20
+       sport       0.94      0.75      0.83        20
 
-    accuracy                           0.82        40
-   macro avg       0.85      0.82      0.82        40
-weighted avg       0.85      0.82      0.82        40
+    accuracy                           0.85        40
+   macro avg       0.86      0.85      0.85        40
+weighted avg       0.86      0.85      0.85        40
 </pre></div>
 </div>
-<img alt="_images/53c939db075b646caa10169b6dfbc3658f642ab94d0de92bb8c18e0c2a1c50d8.png" src="_images/53c939db075b646caa10169b6dfbc3658f642ab94d0de92bb8c18e0c2a1c50d8.png" />
+<img alt="_images/b06525631282b403b2d5c163ab769d998af1831c9921fe27660811b1054e24d5.png" src="_images/b06525631282b403b2d5c163ab769d998af1831c9921fe27660811b1054e24d5.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Pilih indeks berita yang ingin dilihat (misal: dokumen ke-101 / indeks 101)</span>
+<span class="n">idx</span> <span class="o">=</span> <span class="mi">101</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"=== INFORMASI DOKUMEN KE-</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2"> (SKENARIO 1) ==="</span><span class="p">)</span>
+<span class="c1"># Memanggil label dari variabel final Skenario 1</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Kategori : </span><span class="si">{</span><span class="n">y_df_final_s1</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="c1"># Memanggil jumlah dan sampel token dari kolom token Skenario 1</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Jumlah Token : </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_1'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span><span class="si">}</span><span class="s2"> kata"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Sampel Token : </span><span class="si">{</span><span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_1'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx</span><span class="p">][:</span><span class="mi">10</span><span class="p">]</span><span class="si">}</span><span class="s2">...</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="c1"># Mengambil baris vektor dari DataFrame X final Skenario 1</span>
+<span class="n">vektor_dokumen</span> <span class="o">=</span> <span class="n">X_df_final_s1</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Bentuk Vektor (Shape) : </span><span class="si">{</span><span class="n">vektor_dokumen</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Representasi Vektor (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">vektor_dokumen</span><span class="p">)</span><span class="si">}</span><span class="s2"> Dimensi):"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vektor_dokumen</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=== INFORMASI DOKUMEN KE-101 (SKENARIO 1) ===
+Kategori : finance
+Jumlah Token : 234 kata
+Sampel Token : ['ketua', 'badan', 'lindung', 'konsumen', 'nasional', 'bpkn', 'mufti', 'mubarok', 'minta', 'perintah']...
+
+Bentuk Vektor (Shape) : (50,)
+Representasi Vektor (50 Dimensi):
+[ 0.04020155 -0.51387805  0.31336153 -0.02807101  0.1231763   0.28466722
+ -0.05033119  0.05695695 -0.1491481   0.2012972  -0.15744567  0.13335766
+  0.03634099  0.28720224  0.26883167 -0.22698767  0.02468414 -0.16709505
+ -0.32321995 -0.05137025 -0.10791039  0.22348472 -0.21372841  0.1571014
+ -0.02000372  0.0172297  -0.15544915  0.35404474 -0.06798056 -0.36390188
+ -0.10664698 -0.03397197 -0.10763393  0.03295362 -0.23513354  0.14435919
+  0.08454856 -0.74366075  0.17399001  0.06191656 -0.17489219  0.28285155
+  0.23698062 -0.2892331   0.32687923  0.17542227  0.18053196  0.26430404
+  0.10973699 -0.26484337]
+</pre></div>
+</div>
 </div>
 </div>
 </section>
@@ -1612,11 +2225,42 @@ weighted avg       0.85      0.82      0.82        40
 <p><strong>Pembagian data Skenario 2.</strong> Parameter split sama dengan Skenario 1 agar perbandingan lebih adil. <code class="docutils literal notranslate"><span class="pre">stratify=df_skenario_2_y</span></code> menjaga proporsi label kategori saat dokumen dibagi menjadi data latih dan data uji.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
-    <span class="n">df_skenario_2_X</span><span class="p">,</span> <span class="n">df_skenario_2_y</span><span class="p">,</span> 
-    <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> 
-    <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span> 
-    <span class="n">stratify</span><span class="o">=</span><span class="n">df_skenario_2_y</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"=== PEMODELAN FINAL DENGAN PARAMETER TERBAIK ==="</span><span class="p">)</span>
+<span class="n">best_v2</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">hasil_tuning_skenario_2</span><span class="p">[</span><span class="s1">'Vector_Size'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">best_w2</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">hasil_tuning_skenario_2</span><span class="p">[</span><span class="s1">'Window'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">best_s2</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">hasil_tuning_skenario_2</span><span class="p">[</span><span class="s1">'Var_Smoothing'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Menggunakan Parameter -&gt; Vector: </span><span class="si">{</span><span class="n">best_v2</span><span class="si">}</span><span class="s2">, Window: </span><span class="si">{</span><span class="n">best_w2</span><span class="si">}</span><span class="s2">, Smoothing: </span><span class="si">{</span><span class="n">best_s2</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=== PEMODELAN FINAL DENGAN PARAMETER TERBAIK ===
+Menggunakan Parameter -&gt; Vector: 50, Window: 7, Smoothing: 1e-09
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. Ekstraksi Fitur Ulang dengan Parameter Terbaik</span>
+<span class="n">model_w2v_final_s2</span> <span class="o">=</span> <span class="n">latih_skipgram</span><span class="p">(</span><span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_2'</span><span class="p">],</span> <span class="n">ukuran_vektor</span><span class="o">=</span><span class="n">best_v2</span><span class="p">,</span> <span class="n">ukuran_window</span><span class="o">=</span><span class="n">best_w2</span><span class="p">)</span>
+<span class="n">fitur_X_final_s2</span> <span class="o">=</span> <span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_2'</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">get_vektor_rata_rata</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">model_w2v_final_s2</span><span class="p">))</span>
+<span class="n">X_df_final_s2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">fitur_X_final_s2</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<span class="n">y_df_final_s2</span> <span class="o">=</span> <span class="n">df_all</span><span class="p">[</span><span class="s1">'kategori'</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X_train_s2</span><span class="p">,</span> <span class="n">X_test_s2</span><span class="p">,</span> <span class="n">y_train_s2</span><span class="p">,</span> <span class="n">y_test_s2</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+    <span class="n">X_df_final_s2</span><span class="p">,</span> <span class="n">y_df_final_s2</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">y_df_final_s2</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -1625,13 +2269,10 @@ weighted avg       0.85      0.82      0.82        40
 <p><strong>Gaussian Naive Bayes Skenario 2.</strong> Classifier dilatih menggunakan <code class="docutils literal notranslate"><span class="pre">df_skenario_2_X</span></code> dan label kategori skenario 2. Tahap <code class="docutils literal notranslate"><span class="pre">fit</span></code> mempelajari pola dari data latih, sedangkan <code class="docutils literal notranslate"><span class="pre">predict</span></code> menguji prediksi pada data uji. Seperti Skenario 1, model mengasumsikan distribusi Gaussian untuk tiap fitur dalam kelas dan independensi bersyarat antarf fitur.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model_nb_skenario1</span> <span class="o">=</span> <span class="n">GaussianNB</span><span class="p">()</span>
-
-<span class="c1"># 3. Melatih Model dengan Data Latih</span>
-<span class="n">model_nb_skenario1</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
-
-<span class="c1"># 4. Memprediksi Data Uji</span>
-<span class="n">y_pred</span> <span class="o">=</span> <span class="n">model_nb_skenario1</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 3. Latih Model Final Skenario 2</span>
+<span class="n">nb_final_s2</span> <span class="o">=</span> <span class="n">GaussianNB</span><span class="p">(</span><span class="n">var_smoothing</span><span class="o">=</span><span class="n">best_s2</span><span class="p">)</span>
+<span class="n">nb_final_s2</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train_s2</span><span class="p">,</span> <span class="n">y_train_s2</span><span class="p">)</span>
+<span class="n">y_pred_s2</span> <span class="o">=</span> <span class="n">nb_final_s2</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test_s2</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1639,18 +2280,16 @@ weighted avg       0.85      0.82      0.82        40
 <p><strong>Membaca evaluasi Skenario 2.</strong> Baca accuracy bersama precision, recall, F1, dan confusion matrix. Bandingkan dengan Skenario 1 pada label serta pembagian data yang sebanding. Selisih metrik menunjukkan perbedaan pada eksperimen ini, tetapi dengan jumlah data terbatas dan embedding yang dipelajari dari korpus kecil, hasilnya belum cukup untuk menyatakan keunggulan umum salah satu preprocessing.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"=== HASIL EVALUASI NAIVE BAYES (SKENARIO 1) ==="</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Akurasi Model : </span><span class="si">{</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"Laporan Klasifikasi Detail:"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">classification_report</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">))</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"LAPORAN KLASIFIKASI SKENARIO 2:"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Akurasi Model : </span><span class="si">{</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test_s2</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred_s2</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">classification_report</span><span class="p">(</span><span class="n">y_test_s2</span><span class="p">,</span> <span class="n">y_pred_s2</span><span class="p">))</span>
 
-<span class="c1"># 6. Visualisasi Confusion Matrix (Opsional, sangat bagus untuk laporan)</span>
-<span class="n">cm</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+<span class="n">cm2</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">y_test_s2</span><span class="p">,</span> <span class="n">y_pred_s2</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
-<span class="n">sns</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span><span class="n">cm</span><span class="p">,</span> <span class="n">annot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">'d'</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">'Blues'</span><span class="p">,</span> 
-            <span class="n">xticklabels</span><span class="o">=</span><span class="n">model_nb_skenario1</span><span class="o">.</span><span class="n">classes_</span><span class="p">,</span> 
-            <span class="n">yticklabels</span><span class="o">=</span><span class="n">model_nb_skenario1</span><span class="o">.</span><span class="n">classes_</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">'Confusion Matrix - Skenario 1'</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span><span class="n">cm2</span><span class="p">,</span> <span class="n">annot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">'d'</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">'Oranges'</span><span class="p">,</span>
+            <span class="n">xticklabels</span><span class="o">=</span><span class="n">nb_final_s2</span><span class="o">.</span><span class="n">classes_</span><span class="p">,</span>
+            <span class="n">yticklabels</span><span class="o">=</span><span class="n">nb_final_s2</span><span class="o">.</span><span class="n">classes_</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">'Confusion Matrix - Skenario 2'</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">'Label Sebenarnya'</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">'Label Prediksi'</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
@@ -1658,10 +2297,138 @@ weighted avg       0.85      0.82      0.82        40
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=== HASIL EVALUASI NAIVE BAYES (SKENARIO 1) ===
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>LAPORAN KLASIFIKASI SKENARIO 2:
+Akurasi Model : 75.00%
+
+              precision    recall  f1-score   support
+
+     finance       0.68      0.95      0.79        20
+       sport       0.92      0.55      0.69        20
+
+    accuracy                           0.75        40
+   macro avg       0.80      0.75      0.74        40
+weighted avg       0.80      0.75      0.74        40
+</pre></div>
+</div>
+<img alt="_images/dc74556ddbac9f3c58ae22a5a313786fa5ba3fa671b74af4463853a736ceb802.png" src="_images/dc74556ddbac9f3c58ae22a5a313786fa5ba3fa671b74af4463853a736ceb802.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Pilih indeks berita yang ingin dilihat (misal: dokumen ke-101 / indeks 101)</span>
+<span class="n">idx</span> <span class="o">=</span> <span class="mi">101</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"=== INFORMASI DOKUMEN KE-</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2"> (SKENARIO 2) ==="</span><span class="p">)</span>
+<span class="c1"># Memanggil label dari variabel final Skenario 2</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Kategori : </span><span class="si">{</span><span class="n">y_df_final_s2</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="c1"># Memanggil jumlah dan sampel token dari kolom token Skenario 2</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Jumlah Token : </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_2'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span><span class="si">}</span><span class="s2"> kata"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Sampel Token : </span><span class="si">{</span><span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_2'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx</span><span class="p">][:</span><span class="mi">10</span><span class="p">]</span><span class="si">}</span><span class="s2">...</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="c1"># Mengambil baris vektor dari DataFrame X final Skenario 2</span>
+<span class="n">vektor_dokumen</span> <span class="o">=</span> <span class="n">X_df_final_s2</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Bentuk Vektor (Shape) : </span><span class="si">{</span><span class="n">vektor_dokumen</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Representasi Vektor (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">vektor_dokumen</span><span class="p">)</span><span class="si">}</span><span class="s2"> Dimensi):"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vektor_dokumen</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=== INFORMASI DOKUMEN KE-101 (SKENARIO 2) ===
+Kategori : finance
+Jumlah Token : 238 kata
+Sampel Token : ['ketua', 'badan', 'lindung', 'konsumen', 'nasional', 'bpkn', 'mufti', 'mubarok', 'minta', 'perintah']...
+
+Bentuk Vektor (Shape) : (50,)
+Representasi Vektor (50 Dimensi):
+[ 0.25638694 -0.47296408  0.35532057 -0.15059166 -0.17767364  0.3547623
+  0.11207014  0.33601886 -0.18471555  0.14499067 -0.48463288  0.14253855
+ -0.50174856  0.21966997  0.2990941  -0.21833315  0.10215095 -0.16404368
+ -0.13071339  0.16419818 -0.22361234  0.1705404   0.07208886 -0.00422811
+  0.30934685 -0.03511598  0.13024667  0.17171313 -0.10916322 -0.16449513
+  0.24417087 -0.22414002  0.21479873 -0.00149418 -0.4882957   0.02251448
+  0.1309432  -0.43939045  0.0084844   0.2534285  -0.37492877  0.0379643
+  0.30465695 -0.04828845  0.4914939  -0.25258893  0.15563808  0.16419828
+ -0.05041227 -0.35712737]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="skenario-3">
+<h3>Skenario 3:<a class="headerlink" href="#skenario-3" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"=== PEMODELAN FINAL DENGAN PARAMETER TERBAIK ==="</span><span class="p">)</span>
+<span class="n">best_v3</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">hasil_tuning_skenario_3</span><span class="p">[</span><span class="s1">'Vector_Size'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">best_w3</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">hasil_tuning_skenario_3</span><span class="p">[</span><span class="s1">'Window'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">best_s3</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">hasil_tuning_skenario_3</span><span class="p">[</span><span class="s1">'Var_Smoothing'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Menggunakan Parameter -&gt; Vector: </span><span class="si">{</span><span class="n">best_v3</span><span class="si">}</span><span class="s2">, Window: </span><span class="si">{</span><span class="n">best_w3</span><span class="si">}</span><span class="s2">, Smoothing: </span><span class="si">{</span><span class="n">best_s3</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=== PEMODELAN FINAL DENGAN PARAMETER TERBAIK ===
+Menggunakan Parameter -&gt; Vector: 100, Window: 3, Smoothing: 0.1
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. Ekstraksi Fitur Ulang dengan Parameter Terbaik</span>
+<span class="n">model_w2v_final_s3</span> <span class="o">=</span> <span class="n">latih_skipgram</span><span class="p">(</span><span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_3'</span><span class="p">],</span> <span class="n">ukuran_vektor</span><span class="o">=</span><span class="n">best_v3</span><span class="p">,</span> <span class="n">ukuran_window</span><span class="o">=</span><span class="n">best_w3</span><span class="p">)</span>
+<span class="n">fitur_X_final_s3</span> <span class="o">=</span> <span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_3'</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">get_vektor_rata_rata</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">model_w2v_final_s3</span><span class="p">))</span>
+<span class="n">X_df_final_s3</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">fitur_X_final_s3</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<span class="n">y_df_final_s3</span> <span class="o">=</span> <span class="n">df_all</span><span class="p">[</span><span class="s1">'kategori'</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X_train_s3</span><span class="p">,</span> <span class="n">X_test_s3</span><span class="p">,</span> <span class="n">y_train_s3</span><span class="p">,</span> <span class="n">y_test_s3</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+    <span class="n">X_df_final_s3</span><span class="p">,</span> <span class="n">y_df_final_s3</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">y_df_final_s3</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 3. Latih Model Final Skenario 3</span>
+<span class="n">nb_final_s3</span> <span class="o">=</span> <span class="n">GaussianNB</span><span class="p">(</span><span class="n">var_smoothing</span><span class="o">=</span><span class="n">best_s3</span><span class="p">)</span>
+<span class="n">nb_final_s3</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train_s3</span><span class="p">,</span> <span class="n">y_train_s3</span><span class="p">)</span>
+<span class="n">y_pred_s3</span> <span class="o">=</span> <span class="n">nb_final_s3</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test_s3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"LAPORAN KLASIFIKASI SKENARIO 3:"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Akurasi Model : </span><span class="si">{</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test_s3</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred_s3</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">classification_report</span><span class="p">(</span><span class="n">y_test_s3</span><span class="p">,</span> <span class="n">y_pred_s3</span><span class="p">))</span>
+
+<span class="n">cm3</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">y_test_s3</span><span class="p">,</span> <span class="n">y_pred_s3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span><span class="n">cm3</span><span class="p">,</span> <span class="n">annot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">'d'</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">'Oranges'</span><span class="p">,</span> <span class="c1"># Menggunakan warna Oranges agar beda dengan Skenario 1 (Blues)</span>
+            <span class="n">xticklabels</span><span class="o">=</span><span class="n">nb_final_s3</span><span class="o">.</span><span class="n">classes_</span><span class="p">,</span>
+            <span class="n">yticklabels</span><span class="o">=</span><span class="n">nb_final_s3</span><span class="o">.</span><span class="n">classes_</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">'Confusion Matrix - Skenario 3'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">'Label Sebenarnya'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">'Label Prediksi'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>LAPORAN KLASIFIKASI SKENARIO 3:
 Akurasi Model : 77.50%
 
-Laporan Klasifikasi Detail:
               precision    recall  f1-score   support
 
      finance       0.69      1.00      0.82        20
@@ -1672,10 +2439,474 @@ Laporan Klasifikasi Detail:
 weighted avg       0.84      0.78      0.76        40
 </pre></div>
 </div>
-<img alt="_images/0db18d21ef74dc14fff6bddd991c0bae5e96071836b7dbf263a69c8eff1b55a4.png" src="_images/0db18d21ef74dc14fff6bddd991c0bae5e96071836b7dbf263a69c8eff1b55a4.png" />
+<img alt="_images/45c065397e99c1ea9b25d0ae3a1f8a9109ba553900c0d675964648c7ce630459.png" src="_images/45c065397e99c1ea9b25d0ae3a1f8a9109ba553900c0d675964648c7ce630459.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Pilih indeks berita yang ingin dilihat (misal: dokumen ke-101 / indeks 101)</span>
+<span class="n">idx</span> <span class="o">=</span> <span class="mi">101</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"=== INFORMASI DOKUMEN KE-</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2"> (SKENARIO 3) ==="</span><span class="p">)</span>
+<span class="c1"># Memanggil label dari variabel final Skenario 3</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Kategori : </span><span class="si">{</span><span class="n">y_df_final_s3</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="c1"># Memanggil jumlah dan sampel token dari kolom token Skenario 3</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Jumlah Token : </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_3'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span><span class="si">}</span><span class="s2"> kata"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Sampel Token : </span><span class="si">{</span><span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_3'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx</span><span class="p">][:</span><span class="mi">10</span><span class="p">]</span><span class="si">}</span><span class="s2">...</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="c1"># Mengambil baris vektor dari DataFrame X final Skenario 3</span>
+<span class="n">vektor_dokumen</span> <span class="o">=</span> <span class="n">X_df_final_s3</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Bentuk Vektor (Shape) : </span><span class="si">{</span><span class="n">vektor_dokumen</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Representasi Vektor (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">vektor_dokumen</span><span class="p">)</span><span class="si">}</span><span class="s2"> Dimensi):"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vektor_dokumen</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=== INFORMASI DOKUMEN KE-101 (SKENARIO 3) ===
+Kategori : finance
+Jumlah Token : 328 kata
+Sampel Token : ['ketua', 'badan', 'lindung', 'konsumen', 'nasional', 'bpkn', 'mufti', 'mubarok', 'minta', 'perintah']...
+
+Bentuk Vektor (Shape) : (100,)
+Representasi Vektor (100 Dimensi):
+[ 0.11839116 -0.11424357 -0.06663416 -0.02160475 -0.30776632  0.09191155
+  0.04735298  0.30866754 -0.12030139  0.09773953 -0.16438326  0.23141679
+ -0.00947482  0.19718215 -0.15003158 -0.0561731  -0.00788136 -0.17909108
+ -0.23958504 -0.06084428  0.06978177  0.09099984 -0.159489    0.23901595
+  0.18226887  0.02768661 -0.13514198  0.23841962 -0.10868514 -0.23630747
+  0.09291255 -0.15984231  0.01348597  0.17201167  0.02120883 -0.15587004
+  0.07790475 -0.29067943 -0.05250892  0.13560487 -0.14138909  0.04387802
+  0.09611293 -0.32047105  0.08599382 -0.1667784   0.10034379  0.06775147
+  0.3453558  -0.25404045 -0.01636706 -0.5541535   0.11656589 -0.16917615
+  0.24234937  0.06557424 -0.22882512  0.05593178 -0.11646961  0.22807868
+ -0.08216536 -0.14762929 -0.34919024  0.16372266  0.14674723  0.11502662
+  0.08497992 -0.10734753 -0.1462794  -0.09074558 -0.05694125  0.06993223
+  0.01550452 -0.26188517  0.21991223 -0.07697006 -0.03832806  0.01454008
+  0.03238924 -0.16160153 -0.04627074 -0.14839555  0.14111146  0.17085844
+ -0.07948091  0.18834643 -0.07460521 -0.31052473  0.00612659  0.00082742
+ -0.25430596  0.17878039  0.0938748  -0.10837559  0.1803029  -0.05442858
+ -0.02652142  0.17236319 -0.13072991  0.01503507]
+</pre></div>
+</div>
 </div>
 </div>
 </section>
+<section id="skenario-4">
+<h3>Skenario 4:<a class="headerlink" href="#skenario-4" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"=== PEMODELAN FINAL DENGAN PARAMETER TERBAIK ==="</span><span class="p">)</span>
+<span class="n">best_v4</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">hasil_tuning_skenario_4</span><span class="p">[</span><span class="s1">'Vector_Size'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">best_w4</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">hasil_tuning_skenario_4</span><span class="p">[</span><span class="s1">'Window'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">best_s4</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">hasil_tuning_skenario_4</span><span class="p">[</span><span class="s1">'Var_Smoothing'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Menggunakan Parameter -&gt; Vector: </span><span class="si">{</span><span class="n">best_v4</span><span class="si">}</span><span class="s2">, Window: </span><span class="si">{</span><span class="n">best_w4</span><span class="si">}</span><span class="s2">, Smoothing: </span><span class="si">{</span><span class="n">best_s4</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=== PEMODELAN FINAL DENGAN PARAMETER TERBAIK ===
+Menggunakan Parameter -&gt; Vector: 75, Window: 3, Smoothing: 1e-09
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. Ekstraksi Fitur Ulang dengan Parameter Terbaik</span>
+<span class="n">model_w2v_final_s4</span> <span class="o">=</span> <span class="n">latih_skipgram</span><span class="p">(</span><span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_4'</span><span class="p">],</span> <span class="n">ukuran_vektor</span><span class="o">=</span><span class="n">best_v4</span><span class="p">,</span> <span class="n">ukuran_window</span><span class="o">=</span><span class="n">best_w4</span><span class="p">)</span>
+<span class="n">fitur_X_final_s4</span> <span class="o">=</span> <span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_4'</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">get_vektor_rata_rata</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">model_w2v_final_s4</span><span class="p">))</span>
+<span class="n">X_df_final_s4</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">fitur_X_final_s4</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<span class="n">y_df_final_s4</span> <span class="o">=</span> <span class="n">df_all</span><span class="p">[</span><span class="s1">'kategori'</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X_train_s4</span><span class="p">,</span> <span class="n">X_test_s4</span><span class="p">,</span> <span class="n">y_train_s4</span><span class="p">,</span> <span class="n">y_test_s4</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+    <span class="n">X_df_final_s4</span><span class="p">,</span> <span class="n">y_df_final_s4</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">y_df_final_s4</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 3. Latih Model Final Skenario 4</span>
+<span class="n">nb_final_s4</span> <span class="o">=</span> <span class="n">GaussianNB</span><span class="p">(</span><span class="n">var_smoothing</span><span class="o">=</span><span class="n">best_s4</span><span class="p">)</span>
+<span class="n">nb_final_s4</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train_s4</span><span class="p">,</span> <span class="n">y_train_s4</span><span class="p">)</span>
+<span class="n">y_pred_s4</span> <span class="o">=</span> <span class="n">nb_final_s4</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test_s4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"LAPORAN KLASIFIKASI SKENARIO 4:"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Akurasi Model : </span><span class="si">{</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test_s4</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred_s4</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">classification_report</span><span class="p">(</span><span class="n">y_test_s4</span><span class="p">,</span> <span class="n">y_pred_s4</span><span class="p">))</span>
+
+<span class="n">cm4</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">y_test_s4</span><span class="p">,</span> <span class="n">y_pred_s4</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span><span class="n">cm4</span><span class="p">,</span> <span class="n">annot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">'d'</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">'Oranges'</span><span class="p">,</span> <span class="c1"># Menggunakan warna Oranges agar beda dengan Skenario 1 (Blues)</span>
+            <span class="n">xticklabels</span><span class="o">=</span><span class="n">nb_final_s4</span><span class="o">.</span><span class="n">classes_</span><span class="p">,</span>
+            <span class="n">yticklabels</span><span class="o">=</span><span class="n">nb_final_s4</span><span class="o">.</span><span class="n">classes_</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">'Confusion Matrix - Skenario 4'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">'Label Sebenarnya'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">'Label Prediksi'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>LAPORAN KLASIFIKASI SKENARIO 4:
+Akurasi Model : 77.50%
+
+              precision    recall  f1-score   support
+
+     finance       0.69      1.00      0.82        20
+       sport       1.00      0.55      0.71        20
+
+    accuracy                           0.78        40
+   macro avg       0.84      0.78      0.76        40
+weighted avg       0.84      0.78      0.76        40
+</pre></div>
+</div>
+<img alt="_images/8b8014bbe80e5d0dee7e0c7a65cf0be776387ad1e87c16bec4e1100f6b5bd012.png" src="_images/8b8014bbe80e5d0dee7e0c7a65cf0be776387ad1e87c16bec4e1100f6b5bd012.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Pilih indeks berita yang ingin dilihat (misal: dokumen ke-101 / indeks 101)</span>
+<span class="n">idx</span> <span class="o">=</span> <span class="mi">101</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"=== INFORMASI DOKUMEN KE-</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2"> (SKENARIO 4) ==="</span><span class="p">)</span>
+<span class="c1"># Memanggil label dari variabel final Skenario 4</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Kategori : </span><span class="si">{</span><span class="n">y_df_final_s4</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="c1"># Memanggil jumlah dan sampel token dari kolom token Skenario 4</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Jumlah Token : </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_4'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span><span class="si">}</span><span class="s2"> kata"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Sampel Token : </span><span class="si">{</span><span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_4'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx</span><span class="p">][:</span><span class="mi">10</span><span class="p">]</span><span class="si">}</span><span class="s2">...</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="c1"># Mengambil baris vektor dari DataFrame X final Skenario 4</span>
+<span class="n">vektor_dokumen</span> <span class="o">=</span> <span class="n">X_df_final_s4</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Bentuk Vektor (Shape) : </span><span class="si">{</span><span class="n">vektor_dokumen</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Representasi Vektor (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">vektor_dokumen</span><span class="p">)</span><span class="si">}</span><span class="s2"> Dimensi):"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vektor_dokumen</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=== INFORMASI DOKUMEN KE-101 (SKENARIO 4) ===
+Kategori : finance
+Jumlah Token : 234 kata
+Sampel Token : ['ketua', 'badan', 'perlindungan', 'konsumen', 'nasional', 'bpkn', 'mufti', 'mubarok', 'meminta', 'pemerintah']...
+
+Bentuk Vektor (Shape) : (75,)
+Representasi Vektor (75 Dimensi):
+[ 0.08723245 -0.33887535  0.06446873 -0.13905995 -0.09863483  0.11029905
+  0.06672682  0.11259311  0.03386452  0.10540023 -0.18483993 -0.17473578
+  0.00062512 -0.14971344 -0.05481397 -0.12019449  0.15344676 -0.09915475
+ -0.09864997 -0.08702063 -0.11410209  0.23068772  0.0841624   0.37135443
+  0.16238198  0.17794943 -0.2544421  -0.29158822  0.12393116 -0.151109
+  0.05648391 -0.22322226 -0.09579347  0.03190528 -0.02052233 -0.03620521
+  0.250422   -0.40333247  0.15758862  0.18457012 -0.0499858   0.1317335
+  0.1697811  -0.19474335 -0.01566458  0.175219    0.04078862  0.02149769
+ -0.20156866  0.11957389 -0.29638937 -0.015892    0.06797341  0.08284707
+  0.12264972  0.05415067 -0.11405018  0.23556142 -0.0994937  -0.1241444
+ -0.2000902   0.08445762 -0.2065696  -0.07033014  0.14362484  0.02671001
+ -0.02660042  0.07363625 -0.01724116  0.38128778  0.1049161  -0.17719117
+ -0.04454365  0.0847767  -0.26766688]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="skenario-5">
+<h3>Skenario 5:<a class="headerlink" href="#skenario-5" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"=== PEMODELAN FINAL DENGAN PARAMETER TERBAIK ==="</span><span class="p">)</span>
+<span class="n">best_v5</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">hasil_tuning_skenario_5</span><span class="p">[</span><span class="s1">'Vector_Size'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">best_w5</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">hasil_tuning_skenario_5</span><span class="p">[</span><span class="s1">'Window'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">best_s5</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">hasil_tuning_skenario_5</span><span class="p">[</span><span class="s1">'Var_Smoothing'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Menggunakan Parameter -&gt; Vector: </span><span class="si">{</span><span class="n">best_v5</span><span class="si">}</span><span class="s2">, Window: </span><span class="si">{</span><span class="n">best_w5</span><span class="si">}</span><span class="s2">, Smoothing: </span><span class="si">{</span><span class="n">best_s5</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=== PEMODELAN FINAL DENGAN PARAMETER TERBAIK ===
+Menggunakan Parameter -&gt; Vector: 75, Window: 3, Smoothing: 1e-09
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. Ekstraksi Fitur Ulang dengan Parameter Terbaik</span>
+<span class="n">model_w2v_final_s5</span> <span class="o">=</span> <span class="n">latih_skipgram</span><span class="p">(</span><span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_5'</span><span class="p">],</span> <span class="n">ukuran_vektor</span><span class="o">=</span><span class="n">best_v5</span><span class="p">,</span> <span class="n">ukuran_window</span><span class="o">=</span><span class="n">best_w5</span><span class="p">)</span>
+<span class="n">fitur_X_final_s5</span> <span class="o">=</span> <span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_5'</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">get_vektor_rata_rata</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">model_w2v_final_s5</span><span class="p">))</span>
+<span class="n">X_df_final_s5</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">fitur_X_final_s5</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<span class="n">y_df_final_s5</span> <span class="o">=</span> <span class="n">df_all</span><span class="p">[</span><span class="s1">'kategori'</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X_train_s5</span><span class="p">,</span> <span class="n">X_test_s5</span><span class="p">,</span> <span class="n">y_train_s5</span><span class="p">,</span> <span class="n">y_test_s5</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+    <span class="n">X_df_final_s5</span><span class="p">,</span> <span class="n">y_df_final_s5</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">y_df_final_s5</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 3. Latih Model Final Skenario 5</span>
+<span class="n">nb_final_s5</span> <span class="o">=</span> <span class="n">GaussianNB</span><span class="p">(</span><span class="n">var_smoothing</span><span class="o">=</span><span class="n">best_s5</span><span class="p">)</span>
+<span class="n">nb_final_s5</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train_s5</span><span class="p">,</span> <span class="n">y_train_s5</span><span class="p">)</span>
+<span class="n">y_pred_s5</span> <span class="o">=</span> <span class="n">nb_final_s5</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test_s5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"LAPORAN KLASIFIKASI SKENARIO 5:"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Akurasi Model : </span><span class="si">{</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test_s5</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred_s5</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">classification_report</span><span class="p">(</span><span class="n">y_test_s5</span><span class="p">,</span> <span class="n">y_pred_s5</span><span class="p">))</span>
+
+<span class="n">cm5</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">y_test_s5</span><span class="p">,</span> <span class="n">y_pred_s5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span><span class="n">cm5</span><span class="p">,</span> <span class="n">annot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">'d'</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">'Oranges'</span><span class="p">,</span> <span class="c1"># Menggunakan warna Oranges agar beda dengan Skenario 1 (Blues)</span>
+            <span class="n">xticklabels</span><span class="o">=</span><span class="n">nb_final_s5</span><span class="o">.</span><span class="n">classes_</span><span class="p">,</span>
+            <span class="n">yticklabels</span><span class="o">=</span><span class="n">nb_final_s5</span><span class="o">.</span><span class="n">classes_</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">'Confusion Matrix - Skenario 5'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">'Label Sebenarnya'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">'Label Prediksi'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>LAPORAN KLASIFIKASI SKENARIO 5:
+Akurasi Model : 77.50%
+
+              precision    recall  f1-score   support
+
+     finance       0.69      1.00      0.82        20
+       sport       1.00      0.55      0.71        20
+
+    accuracy                           0.78        40
+   macro avg       0.84      0.78      0.76        40
+weighted avg       0.84      0.78      0.76        40
+</pre></div>
+</div>
+<img alt="_images/53dcd86ff158048b0067a1de923a0be46822977adbafff215e5ecec03515aa62.png" src="_images/53dcd86ff158048b0067a1de923a0be46822977adbafff215e5ecec03515aa62.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Pilih indeks berita yang ingin dilihat (misal: dokumen ke-101 / indeks 101)</span>
+<span class="n">idx</span> <span class="o">=</span> <span class="mi">101</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"=== INFORMASI DOKUMEN KE-</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2"> (SKENARIO 5) ==="</span><span class="p">)</span>
+<span class="c1"># Memanggil label dari variabel final Skenario 5</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Kategori : </span><span class="si">{</span><span class="n">y_df_final_s5</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="c1"># Memanggil jumlah dan sampel token dari kolom token Skenario 5</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Jumlah Token : </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_5'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span><span class="si">}</span><span class="s2"> kata"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Sampel Token : </span><span class="si">{</span><span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_5'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx</span><span class="p">][:</span><span class="mi">10</span><span class="p">]</span><span class="si">}</span><span class="s2">...</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="c1"># Mengambil baris vektor dari DataFrame X final Skenario 5</span>
+<span class="n">vektor_dokumen</span> <span class="o">=</span> <span class="n">X_df_final_s5</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Bentuk Vektor (Shape) : </span><span class="si">{</span><span class="n">vektor_dokumen</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Representasi Vektor (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">vektor_dokumen</span><span class="p">)</span><span class="si">}</span><span class="s2"> Dimensi):"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vektor_dokumen</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=== INFORMASI DOKUMEN KE-101 (SKENARIO 5) ===
+Kategori : finance
+Jumlah Token : 332 kata
+Sampel Token : ['ketua', 'badan', 'lindung', 'konsumen', 'nasional', 'bpkn', 'mufti', 'mubarok', 'minta', 'perintah']...
+
+Bentuk Vektor (Shape) : (75,)
+Representasi Vektor (75 Dimensi):
+[ 6.2434014e-02 -7.1359962e-02 -1.1363843e-01 -2.3856756e-01
+ -3.0218562e-01 -6.6264696e-02 -5.9354454e-02  8.7889090e-02
+  4.9072787e-02  2.9998937e-01 -1.3616799e-01 -1.3893688e-01
+ -8.1117027e-02  6.5840324e-03 -2.2799715e-01 -2.9667306e-01
+  2.3125915e-01 -2.4393904e-01 -1.9875552e-01 -1.5139207e-01
+ -2.2890937e-01  4.5326972e-01  1.4297814e-04  4.6081015e-01
+  1.9298053e-01 -5.3637344e-02 -2.1234821e-01 -4.1061756e-01
+  1.1231251e-01 -1.1087142e-01  9.8162487e-02 -4.2865849e-01
+ -7.9439200e-02  1.8951297e-02  1.3513872e-02  6.8814992e-03
+  6.8523504e-02 -3.9732957e-01  9.2063369e-03 -5.4283970e-04
+ -1.0534174e-01  7.7564575e-02  3.2254696e-01 -2.9770255e-01
+  8.5933976e-02 -1.8948986e-01  2.3327272e-02  1.4399201e-01
+ -1.3916716e-01 -7.9540052e-02 -1.1532339e-01 -9.3859911e-02
+  2.3766871e-01  2.0203285e-01  6.5502532e-02 -3.9829928e-02
+  1.0195548e-01  3.9798903e-01 -8.9729823e-02  8.4600272e-03
+ -2.0382369e-01 -2.0974282e-02 -3.7557834e-01  4.0202498e-02
+  2.6417494e-01 -9.7325258e-02  3.5931155e-02 -9.5357403e-02
+ -8.1910297e-02  2.5497726e-01  2.0206031e-01 -8.3094686e-02
+ -9.1591239e-02 -1.3501872e-01 -2.1619940e-01]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="perbandingan-semua-skenario">
+<h2>Perbandingan Semua Skenario<a class="headerlink" href="#perbandingan-semua-skenario" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. Menambahkan kolom penanda pada masing-masing hasil tabel</span>
+<span class="n">hasil_tuning_skenario_1</span><span class="p">[</span><span class="s1">'Skenario'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'Skenario 1 (Tanpa Angka)'</span>
+<span class="n">hasil_tuning_skenario_2</span><span class="p">[</span><span class="s1">'Skenario'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'Skenario 2 (Dengan Angka)'</span>
+<span class="n">hasil_tuning_skenario_3</span><span class="p">[</span><span class="s1">'Skenario'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'Skenario 3 (Tanpa Stopword)'</span>
+<span class="n">hasil_tuning_skenario_4</span><span class="p">[</span><span class="s1">'Skenario'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'Skenario 4 (Tanpa Stemming)'</span>
+<span class="n">hasil_tuning_skenario_5</span><span class="p">[</span><span class="s1">'Skenario'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'Skenario 5 (Dengan Stopword dan Angka)'</span>
+
+<span class="c1"># 2. Menggabungkan kedua tabel secara vertikal</span>
+<span class="n">df_komparasi</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">hasil_tuning_skenario_1</span><span class="p">,</span> <span class="n">hasil_tuning_skenario_2</span><span class="p">,</span> <span class="n">hasil_tuning_skenario_3</span><span class="p">,</span> <span class="n">hasil_tuning_skenario_4</span><span class="p">,</span> <span class="n">hasil_tuning_skenario_5</span><span class="p">],</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># 3. Merapikan urutan kolom agar nama skenario berada di paling depan</span>
+<span class="n">df_komparasi</span> <span class="o">=</span> <span class="n">df_komparasi</span><span class="p">[[</span><span class="s1">'Skenario'</span><span class="p">,</span> <span class="s1">'Vector_Size'</span><span class="p">,</span> <span class="s1">'Window'</span><span class="p">,</span> <span class="s1">'Var_Smoothing'</span><span class="p">,</span> <span class="s1">'Akurasi'</span><span class="p">]]</span>
+
+<span class="c1"># 4. Mengurutkan berdasarkan Akurasi dari yang paling tinggi ke rendah</span>
+<span class="n">df_komparasi_terurut</span> <span class="o">=</span> <span class="n">df_komparasi</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">'Akurasi'</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"=== KOMPARASI KESELURUHAN SKENARIO 1 VS SKENARIO 2 VS SKENARIO 3 ==="</span><span class="p">)</span>
+<span class="c1"># Menampilkan 10 kombinasi terbaik dari keseluruhan eksperimen</span>
+<span class="n">display</span><span class="p">(</span><span class="n">df_komparasi_terurut</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=== KOMPARASI KESELURUHAN SKENARIO 1 VS SKENARIO 2 VS SKENARIO 3 ===
+</pre></div>
+</div>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Skenario</th>
+      <th>Vector_Size</th>
+      <th>Window</th>
+      <th>Var_Smoothing</th>
+      <th>Akurasi</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Skenario 2 (Dengan Angka)</td>
+      <td>50</td>
+      <td>7</td>
+      <td>1.000000e-09</td>
+      <td>0.850</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Skenario 2 (Dengan Angka)</td>
+      <td>50</td>
+      <td>7</td>
+      <td>1.000000e-05</td>
+      <td>0.850</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Skenario 1 (Tanpa Angka)</td>
+      <td>50</td>
+      <td>3</td>
+      <td>1.000000e-09</td>
+      <td>0.825</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Skenario 1 (Tanpa Angka)</td>
+      <td>50</td>
+      <td>3</td>
+      <td>1.000000e-05</td>
+      <td>0.825</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Skenario 2 (Dengan Angka)</td>
+      <td>50</td>
+      <td>3</td>
+      <td>1.000000e-05</td>
+      <td>0.800</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Skenario 1 (Tanpa Angka)</td>
+      <td>50</td>
+      <td>5</td>
+      <td>1.000000e-05</td>
+      <td>0.800</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>Skenario 1 (Tanpa Angka)</td>
+      <td>50</td>
+      <td>5</td>
+      <td>1.000000e-09</td>
+      <td>0.800</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>Skenario 2 (Dengan Angka)</td>
+      <td>75</td>
+      <td>7</td>
+      <td>1.000000e-05</td>
+      <td>0.800</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>Skenario 4 (Tanpa Stemming)</td>
+      <td>75</td>
+      <td>5</td>
+      <td>1.000000e-05</td>
+      <td>0.800</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>Skenario 4 (Tanpa Stemming)</td>
+      <td>75</td>
+      <td>3</td>
+      <td>1.000000e-05</td>
+      <td>0.800</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
 </section>
 <section id="simpulan-dan-catatan-metodologis">
 <h2><strong>Simpulan dan Catatan Metodologis</strong><a class="headerlink" href="#simpulan-dan-catatan-metodologis" title="Link to this heading">#</a></h2>
@@ -1683,6 +2914,47 @@ weighted avg       0.84      0.78      0.76        40
 <p>Hasil evaluasi perlu dibaca sesuai batas eksperimennya. Korpus terdiri atas jumlah artikel yang terbatas dibandingkan korpus besar yang biasanya dibutuhkan untuk mempelajari embedding kata yang stabil. Dengan <code class="docutils literal notranslate"><span class="pre">min_count=1</span></code>, kata yang jarang ikut dipelajari meskipun konteksnya sedikit. Selain itu, mean pooling menghilangkan urutan kata dan merangkum setiap token dengan bobot rata-rata.</p>
 <p>Untuk evaluasi yang benar-benar menguji dokumen yang belum terlihat, pembagian train/test sebaiknya dilakukan sebelum melatih Word2Vec. Fit embedding pada dokumen latih saja, lalu gunakan embedding tersebut untuk membentuk fitur dokumen uji; tangani kata uji yang tidak ada dalam vocabulary secara eksplisit. Perubahan ini merupakan saran metodologis dan tidak diterapkan pada kode notebook.</p>
 <p>Saat menyusun kesimpulan tugas, laporkan angka metrik dari output aktual, sebutkan skenario preprocessing yang lebih baik pada eksperimen ini bila memang didukung oleh metrik, dan jelaskan keterbatasannya. Jangan menyamakan hasil dari korpus kecil ini dengan performa Word2Vec secara umum.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">joblib</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pilihan_skenario</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># Ganti angka ini jika ingin menyimpan skenario lain</span>
+
+<span class="k">if</span> <span class="n">pilihan_skenario</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Menyimpan model dari Skenario 1..."</span><span class="p">)</span>
+    <span class="c1"># 1. Simpan Model Skip-gram Skenario 1 (Gunakan variabel yang benar: model_w2v_final_s1)</span>
+    <span class="n">model_w2v_final_s1</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">"w2v_skenario1_final.model"</span><span class="p">)</span>
+    
+    <span class="c1"># 2. Simpan Model Naive Bayes Skenario 1 (Gunakan variabel yang benar: nb_final_s1)</span>
+    <span class="n">joblib</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">nb_final_s1</span><span class="p">,</span> <span class="s2">"naive_bayes_skenario1.pkl"</span><span class="p">)</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Berhasil! Model Skip-gram dan Naive Bayes Skenario 1 telah disimpan."</span><span class="p">)</span>
+
+<span class="k">elif</span> <span class="n">pilihan_skenario</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Menyimpan model dari Skenario 2..."</span><span class="p">)</span>
+    <span class="c1"># Pastikan skenario 2 sudah dijalankan sebelum memilih opsi ini</span>
+    <span class="n">model_w2v_final_s2</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">"w2v_skenario2_final.model"</span><span class="p">)</span>
+    <span class="n">joblib</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">nb_final_s2</span><span class="p">,</span> <span class="s2">"naive_bayes_skenario2.pkl"</span><span class="p">)</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Berhasil! Model Skip-gram dan Naive Bayes Skenario 2 telah disimpan."</span><span class="p">)</span>
+
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Pilihan tidak valid. Masukkan angka 1 atau 2."</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Menyimpan model dari Skenario 1...
+Berhasil! Model Skip-gram dan Naive Bayes Skenario 1 telah disimpan.
+</pre></div>
+</div>
+</div>
+</div>
 </section>
 </section>
 
@@ -1758,13 +3030,19 @@ weighted avg       0.84      0.78      0.76        40
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#melatih-embedding-dan-membentuk-fitur-dokumen">Melatih Embedding dan Membentuk Fitur Dokumen</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-1-menghapus-angka">Skenario 1: Menghapus Angka</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-2-mempertahankan-angka">Skenario 2: Mempertahankan Angka</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-3-mempertahankan-angka">Skenario 3: Mempertahankan Angka</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-4-mempertahankan-angka">Skenario 4: Mempertahankan Angka</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modeling-dan-evaluasi"><strong>Modeling dan Evaluasi</strong></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Skenario 1: Menghapus Angka</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-2-angka-dipertahankan">Skenario 2: Angka Dipertahankan</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-3">Skenario 3:</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-4">Skenario 4:</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-5">Skenario 5:</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#perbandingan-semua-skenario">Perbandingan Semua Skenario</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simpulan-dan-catatan-metodologis"><strong>Simpulan dan Catatan Metodologis</strong></a></li>
 </ul>
 </li>
