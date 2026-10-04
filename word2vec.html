@@ -395,22 +395,28 @@ document.write(`
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-preprocessing"><strong>Data Preprocessing</strong></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#melatih-embedding-dan-membentuk-fitur-dokumen">Melatih Embedding dan Membentuk Fitur Dokumen</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hyperparameter-tuning-word2vec-dan-naive-bayes">Hyperparameter Tuning Word2Vec dan Naive Bayes</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-1-menghapus-angka">Skenario 1: Menghapus Angka</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-2-mempertahankan-angka">Skenario 2: Mempertahankan Angka</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-3-mempertahankan-angka">Skenario 3: Mempertahankan Angka</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-4-mempertahankan-angka">Skenario 4: Mempertahankan Angka</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#membaca-hasil-tuning-dan-heatmap">Membaca Hasil Tuning dan Heatmap</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-2-angka-dipertahankan">Skenario 2: Angka Dipertahankan</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-3-angka-dihapus-stopword-dipertahankan">Skenario 3: Angka Dihapus, Stopword Dipertahankan</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-4-angka-dan-stopword-dihapus-tanpa-stemming">Skenario 4: Angka dan Stopword Dihapus, Tanpa Stemming</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-5-angka-dan-stopword-dipertahankan">Skenario 5: Angka dan Stopword Dipertahankan</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modeling-dan-evaluasi"><strong>Modeling dan Evaluasi</strong></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Skenario 1: Menghapus Angka</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-2-angka-dipertahankan">Skenario 2: Angka Dipertahankan</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-3">Skenario 3:</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-4">Skenario 4:</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-5">Skenario 5:</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-2-angka-dipertahankan-stopword-dihapus-stemming-aktif">Skenario 2: Angka Dipertahankan, Stopword Dihapus, Stemming Aktif</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#model-final-skenario-3">Model Final Skenario 3</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-4-stemming-tidak-digunakan">Skenario 4: Stemming Tidak Digunakan</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Skenario 5: Angka dan Stopword Dipertahankan</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inspeksi-representasi-dokumen">Inspeksi Representasi Dokumen</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#perbandingan-semua-skenario">Perbandingan Semua Skenario</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simpulan-dan-catatan-metodologis"><strong>Simpulan dan Catatan Metodologis</strong></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#perbandingan-lima-skenario"><strong>Perbandingan Lima Skenario</strong></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simpulan-dan-catatan-review"><strong>Simpulan dan Catatan Review</strong></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ekspor-model-untuk-digunakan-kembali"><strong>Ekspor Model untuk Digunakan Kembali</strong></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#demo-streamlit"><strong>Demo Streamlit</strong></a></li>
 </ul>
 </li>
 </ul>
@@ -427,13 +433,17 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="penerapan-word2vec-pada-data-teks-bahasa-indonesia">
 <h1><strong>Penerapan Word2Vec pada Data Teks Bahasa Indonesia</strong><a class="headerlink" href="#penerapan-word2vec-pada-data-teks-bahasa-indonesia" title="Link to this heading">#</a></h1>
-<p>Notebook ini menjelaskan bagaimana teks berita diubah menjadi representasi numerik menggunakan <strong>Word2Vec</strong>, khususnya arsitektur <strong>Skip-gram</strong>. Pembahasan dimulai dari contoh kecil agar konsep target dan konteks mudah diamati, kemudian dilanjutkan dengan penerapan pada data berita hasil scraping dari kategori <code class="docutils literal notranslate"><span class="pre">sport</span></code> dan <code class="docutils literal notranslate"><span class="pre">finance</span></code>.</p>
-<p>Alur notebook terdiri dari dua bagian utama:</p>
+<p>Notebook ini membahas penggunaan <strong>Word2Vec Skip-gram</strong> untuk mengubah kata dalam berita hasil scraping menjadi vektor numerik, kemudian menggunakan vektor dokumen untuk klasifikasi kategori <code class="docutils literal notranslate"><span class="pre">sport</span></code> dan <code class="docutils literal notranslate"><span class="pre">finance</span></code>. Materi dimulai dari contoh kecil tentang pasangan kata target-konteks, lalu berlanjut ke preprocessing, lima variasi eksperimen, tuning parameter, evaluasi, penyimpanan model, dan tautan aplikasi demo.</p>
+<p>Alur notebook:</p>
 <ol class="arabic simple">
-<li><p><strong>Contoh konsep</strong>: membentuk pasangan kata target-konteks, melatih Word2Vec sederhana, dan melihat vektor kata.</p></li>
-<li><p><strong>Penerapan pada data nyata</strong>: memahami dataset, melakukan preprocessing, melatih Skip-gram, mengubah vektor kata menjadi vektor dokumen, lalu menguji klasifikasi dengan Gaussian Naive Bayes.</p></li>
+<li><p>Memahami konsep Word2Vec, Skip-gram, dan CBOW melalui contoh sederhana.</p></li>
+<li><p>Memeriksa serta mengeksplorasi dataset berita hasil scraping.</p></li>
+<li><p>Membentuk token dengan beberapa konfigurasi preprocessing.</p></li>
+<li><p>Melatih embedding Skip-gram dan merangkum vektor kata menjadi vektor dokumen.</p></li>
+<li><p>Menguji kombinasi parameter Word2Vec dan Gaussian Naive Bayes, lalu membandingkan lima skenario preprocessing.</p></li>
+<li><p>Melatih model final, melihat contoh representasi dokumen, dan menyimpan model yang dipilih.</p></li>
 </ol>
-<p>Word2Vec berbeda dari representasi seperti Bag of Words atau TF-IDF. Bag of Words dan TF-IDF terutama mencatat kemunculan atau bobot kata, sedangkan Word2Vec mempelajari representasi kata dari hubungan kata tersebut dengan kata-kata di sekitarnya. Kata yang digunakan dalam konteks yang mirip diharapkan memiliki vektor yang berdekatan.</p>
+<p>Bag of Words dan TF-IDF terutama merepresentasikan kemunculan atau bobot kata pada dokumen. Word2Vec mempelajari vektor kata dari pola konteks: kata yang muncul dalam konteks serupa diharapkan memiliki representasi yang berdekatan. Vektor kata selanjutnya dirata-ratakan agar setiap artikel memiliki fitur berdimensi tetap untuk classifier.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">gensim.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Word2Vec</span>
@@ -1023,7 +1033,7 @@ Name: jumlah_kata, dtype: float64
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Membuat WordCloud...
 </pre></div>
 </div>
-<img alt="_images/6a9c70bbacf136b9b1698cff3c13d10ba04d3822def01e174f76ff29bcfe0643.png" src="_images/6a9c70bbacf136b9b1698cff3c13d10ba04d3822def01e174f76ff29bcfe0643.png" />
+<img alt="_images/e63d113eab3b2b1905ebb32cf43bfa764518ec52a07c9ca6a81c687197be8dc8.png" src="_images/e63d113eab3b2b1905ebb32cf43bfa764518ec52a07c9ca6a81c687197be8dc8.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1098,8 +1108,46 @@ Name: jumlah_kata, dtype: float64
 </section>
 <section id="data-preprocessing">
 <h2><strong>Data Preprocessing</strong><a class="headerlink" href="#data-preprocessing" title="Link to this heading">#</a></h2>
-<p>Sebelum dipelajari oleh Word2Vec, teks mentah diubah menjadi token. Tahap preprocessing yang konsisten penting karena Word2Vec menganggap bentuk token yang berbeda sebagai kata yang berbeda. Misalnya, perbedaan kapitalisasi atau tanda baca dapat menambah variasi vocabulary yang sebenarnya tidak diperlukan.</p>
-<p>Fungsi modular di bawah menyediakan pilihan untuk menghapus angka, stopword, dan melakukan stemming. Hasil akhirnya berupa list token per dokumen, yaitu format yang dibutuhkan Gensim. Skenario 1 dan 2 menggunakan pipeline yang sama tetapi berbeda pada satu keputusan: apakah angka dihapus.</p>
+<p>Teks dibersihkan dan diubah menjadi list token sebelum dilatih dengan Word2Vec. Case folding menyeragamkan huruf, pembersihan tanda baca mengurangi variasi token, tokenisasi memisahkan teks menjadi kata, dan opsi angka, stopword, serta stemming mengatur informasi mana yang dipertahankan.</p>
+<p>Fungsi preprocessing yang sama digunakan dalam lima konfigurasi. Perbedaan konfigurasi memungkinkan kita mengamati pengaruh keputusan preprocessing terhadap embedding dan hasil klasifikasi:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Skenario</p></th>
+<th class="head"><p>Angka</p></th>
+<th class="head"><p>Stopword</p></th>
+<th class="head"><p>Stemming</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>Dihapus</p></td>
+<td><p>Dihapus</p></td>
+<td><p>Aktif</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>Dipertahankan</p></td>
+<td><p>Dihapus</p></td>
+<td><p>Aktif</p></td>
+</tr>
+<tr class="row-even"><td><p>3</p></td>
+<td><p>Dihapus</p></td>
+<td><p>Dipertahankan</p></td>
+<td><p>Aktif</p></td>
+</tr>
+<tr class="row-odd"><td><p>4</p></td>
+<td><p>Dihapus</p></td>
+<td><p>Dihapus</p></td>
+<td><p>Tidak aktif</p></td>
+</tr>
+<tr class="row-even"><td><p>5</p></td>
+<td><p>Dipertahankan</p></td>
+<td><p>Dipertahankan</p></td>
+<td><p>Aktif</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Tabel ini mengikuti argumen aktual pada pemanggilan <code class="docutils literal notranslate"><span class="pre">preprocess_modular</span></code>. Karena perubahan dilakukan per konfigurasi, perbandingan hasil perlu mempertimbangkan bahwa Skenario 3 menguji stopword, Skenario 4 menguji stemming, dan Skenario 5 mempertahankan angka sekaligus stopword.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">preprocess_modular</span><span class="p">(</span><span class="n">teks</span><span class="p">,</span> <span class="n">hapus_angka</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hapus_stopword</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pakai_stemming</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -1198,11 +1246,22 @@ Name: jumlah_kata, dtype: float64
 </div>
 <section id="melatih-embedding-dan-membentuk-fitur-dokumen">
 <h3>Melatih Embedding dan Membentuk Fitur Dokumen<a class="headerlink" href="#melatih-embedding-dan-membentuk-fitur-dokumen" title="Link to this heading">#</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">latih_skipgram</span></code> melatih Word2Vec dari kumpulan list token. Pada penerapan ini, <code class="docutils literal notranslate"><span class="pre">ukuran_vektor=50</span></code> berarti setiap kata memiliki 50 komponen, <code class="docutils literal notranslate"><span class="pre">ukuran_window=3</span></code> menggunakan konteks hingga tiga posisi di sekitar target, dan <code class="docutils literal notranslate"><span class="pre">sg=1</span></code> memilih Skip-gram. <code class="docutils literal notranslate"><span class="pre">min_count=1</span></code> mempertahankan kata yang hanya muncul sekali; ini mencegah kata hilang dari vocabulary, tetapi pada korpus kecil dapat memasukkan banyak kata langka dengan vektor yang kurang terlatih.</p>
-<p>Model menghasilkan vektor <strong>kata</strong>, sedangkan Gaussian Naive Bayes membutuhkan vektor berukuran tetap untuk setiap <strong>dokumen</strong>. Fungsi <code class="docutils literal notranslate"><span class="pre">get_vektor_rata_rata</span></code> mengambil vektor semua token yang dikenal model lalu menghitung rata-ratanya:</p>
+<p><code class="docutils literal notranslate"><span class="pre">latih_skipgram</span></code> melatih Word2Vec dari list token. Arsitektur dipilih dengan <code class="docutils literal notranslate"><span class="pre">sg=1</span></code>; <code class="docutils literal notranslate"><span class="pre">vector_size</span></code> menentukan dimensi vektor kata, sedangkan <code class="docutils literal notranslate"><span class="pre">window</span></code> menentukan jangkauan konteks. Fungsi menerima nilai dimensi dan window sebagai argumen, sehingga tuning dapat mencoba konfigurasi berbeda. <code class="docutils literal notranslate"><span class="pre">min_count=1</span></code> mempertahankan kata langka, tetapi kata dengan sedikit konteks mungkin memiliki vektor yang kurang stabil.</p>
+<p>Model memberikan satu vektor untuk setiap kata. Agar dapat digunakan classifier, <code class="docutils literal notranslate"><span class="pre">get_vektor_rata_rata</span></code> merangkum vektor kata dalam artikel menjadi satu vektor dokumen:</p>
 <div class="math notranslate nohighlight">
-\[\begin{split}\\mathbf{d} = \\frac{1}{m} \\sum_{i=1}^{m} \\mathbf{v}_{w_i}\end{split}\]</div>
-<p><code class="docutils literal notranslate"><span class="pre">m</span></code> adalah jumlah token dokumen yang memiliki vektor. Hasilnya tetap berdimensi 50 berapa pun panjang artikelnya. Jika tidak ada token yang dikenal, fungsi menghasilkan vektor nol. Mean pooling praktis untuk klasifikasi, tetapi menghilangkan urutan kata dan merangkum semua kata dengan bobot rata-rata yang sama.</p>
+\[\mathbf{d} = \frac{1}{m} \sum_{i=1}^{m} \mathbf{v}_{w_i}\]</div>
+<p><code class="docutils literal notranslate"><span class="pre">m</span></code> adalah jumlah token yang ada dalam vocabulary model. Hasilnya memiliki jumlah fitur tetap yang sama dengan <code class="docutils literal notranslate"><span class="pre">vector_size</span></code>. Dokumen tanpa token yang dikenal mendapat vektor nol. Mean pooling praktis, tetapi menghilangkan urutan kata dan memberi kontribusi rata-rata yang sama pada token-token dokumen.</p>
+</section>
+<section id="hyperparameter-tuning-word2vec-dan-naive-bayes">
+<h3>Hyperparameter Tuning Word2Vec dan Naive Bayes<a class="headerlink" href="#hyperparameter-tuning-word2vec-dan-naive-bayes" title="Link to this heading">#</a></h3>
+<p>Fungsi <code class="docutils literal notranslate"><span class="pre">tuning_w2v_naive_bayes</span></code> menguji kombinasi tiga parameter:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">vector_size</span></code>: 50, 75, atau 100 dimensi;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">window</span></code>: 3, 5, atau 7 token konteks;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">var_smoothing</span></code> Gaussian Naive Bayes: <span class="math notranslate nohighlight">\(10^{-9}\)</span>, <span class="math notranslate nohighlight">\(10^{-5}\)</span>, atau <span class="math notranslate nohighlight">\(10^{-1}\)</span>.</p></li>
+</ul>
+<p>Tiga pilihan untuk setiap parameter menghasilkan 27 kombinasi per skenario. Untuk setiap kombinasi <code class="docutils literal notranslate"><span class="pre">vector_size</span></code> dan <code class="docutils literal notranslate"><span class="pre">window</span></code>, fungsi melatih Word2Vec, melakukan mean pooling untuk membentuk fitur artikel, membagi fitur dan label dengan <code class="docutils literal notranslate"><span class="pre">test_size=0.2</span></code> serta <code class="docutils literal notranslate"><span class="pre">stratify</span></code>, lalu mencoba ketiga nilai <code class="docutils literal notranslate"><span class="pre">var_smoothing</span></code>. Akurasi tiap percobaan disimpan dan tabel hasil diurutkan dari akurasi terbesar.</p>
+<p>Tabel <strong>TOP 5</strong> menunjukkan lima kombinasi dengan akurasi tertinggi pada eksperimen tersebut. Heatmap merangkum akurasi menurut <code class="docutils literal notranslate"><span class="pre">vector_size</span></code> dan <code class="docutils literal notranslate"><span class="pre">window</span></code> setelah hasil difilter ke satu nilai <code class="docutils literal notranslate"><span class="pre">var_smoothing</span></code> terbaik. Ini membantu membandingkan pola parameter, tetapi bukan bukti bahwa hasil akan sama pada data baru.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">daftar_stopword</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">StopWordRemoverFactory</span><span class="p">()</span><span class="o">.</span><span class="n">get_stop_words</span><span class="p">())</span>
@@ -1232,25 +1291,25 @@ Name: jumlah_kata, dtype: float64
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1. Memulai Preprocessing Skenario 1 (Ini akan memakan waktu karena Stemming)...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  0%|                                                                                                                                                        | 0/200 [00:00&lt;?, ?it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  0%|                                                                                                                                                                  | 0/200 [00:00&lt;?, ?it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  1%|█▍                                                                                                                                              | 2/200 [00:05&lt;09:17,  2.81s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  1%|█▌                                                                                                                                                        | 2/200 [00:05&lt;09:10,  2.78s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  2%|██▏                                                                                                                                             | 3/200 [00:10&lt;11:52,  3.62s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  2%|██▎                                                                                                                                                       | 3/200 [00:10&lt;11:56,  3.64s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  2%|██▉                                                                                                                                             | 4/200 [00:19&lt;18:22,  5.63s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  2%|███                                                                                                                                                       | 4/200 [00:19&lt;18:27,  5.65s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  2%|███▌                                                                                                                                            | 5/200 [00:22&lt;15:09,  4.66s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  2%|███▊                                                                                                                                                      | 5/200 [00:22&lt;15:10,  4.67s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  3%|████▎                                                                                                                                           | 6/200 [00:26&lt;14:31,  4.49s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  3%|████▌                                                                                                                                                     | 6/200 [00:26&lt;14:30,  4.48s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  3%|████▎                                                                                                                                           | 6/200 [00:29&lt;16:09,  5.00s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  3%|████▌                                                                                                                                                     | 6/200 [00:29&lt;16:09,  5.00s/it]
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
@@ -1385,12 +1444,14 @@ Name: jumlah_kata, dtype: float64
 <span class="g g-Whitespace">     </span><span class="mi">39</span> <span class="c1">#step 6</span>
 <span class="g g-Whitespace">     </span><span class="mi">40</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_word</span><span class="p">):</span>
 
-<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/site-packages/Sastrawi/Stemmer/Context/Context.py:80,</span> in <span class="ni">Context.start_stemming_process</span><span class="nt">(self)</span>
-<span class="g g-Whitespace">     </span><span class="mi">77</span>     <span class="k">return</span>
-<span class="g g-Whitespace">     </span><span class="mi">79</span> <span class="c1">#step 4, 5</span>
-<span class="ne">---&gt; </span><span class="mi">80</span> <span class="bp">self</span><span class="o">.</span><span class="n">remove_prefixes</span><span class="p">()</span>
-<span class="g g-Whitespace">     </span><span class="mi">81</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_word</span><span class="p">):</span>
-<span class="g g-Whitespace">     </span><span class="mi">82</span>     <span class="k">return</span>
+<span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/site-packages/Sastrawi/Stemmer/Context/Context.py:60,</span> in <span class="ni">Context.start_stemming_process</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">     </span><span class="mi">56</span> <span class="c1">#Confix Stripping</span>
+<span class="g g-Whitespace">     </span><span class="mi">57</span> <span class="c1">#Try to remove prefix before suffix if the specification is met</span>
+<span class="g g-Whitespace">     </span><span class="mi">58</span> <span class="k">if</span> <span class="n">csPrecedenceAdjustmentSpecification</span><span class="o">.</span><span class="n">is_satisfied_by</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">original_word</span><span class="p">):</span>
+<span class="g g-Whitespace">     </span><span class="mi">59</span>     <span class="c1">#step 4, 5</span>
+<span class="ne">---&gt; </span><span class="mi">60</span>     <span class="bp">self</span><span class="o">.</span><span class="n">remove_prefixes</span><span class="p">()</span>
+<span class="g g-Whitespace">     </span><span class="mi">61</span>     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_word</span><span class="p">):</span>
+<span class="g g-Whitespace">     </span><span class="mi">62</span>         <span class="k">return</span>
 
 <span class="nn">File ~/miniconda3/envs/web-mining/lib/python3.10/site-packages/Sastrawi/Stemmer/Context/Context.py:89,</span> in <span class="ni">Context.remove_prefixes</span><span class="nt">(self)</span>
 <span class="g g-Whitespace">     </span><span class="mi">87</span> <span class="k">def</span><span class="w"> </span><span class="nf">remove_prefixes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1448,23 +1509,29 @@ Melatih Skip-gram (Vektor=50, Window=3)...
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Melatih Skip-gram (Vektor=50, Window=5)...
+Melatih Skip-gram (Vektor=50, Window=7)...
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Melatih Skip-gram (Vektor=50, Window=7)...
-Melatih Skip-gram (Vektor=75, Window=3)...
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Melatih Skip-gram (Vektor=75, Window=3)...
 Melatih Skip-gram (Vektor=75, Window=5)...
+Melatih Skip-gram (Vektor=75, Window=7)...
+Melatih Skip-gram (Vektor=100, Window=3)...
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Melatih Skip-gram (Vektor=75, Window=7)...
-Melatih Skip-gram (Vektor=100, Window=3)...
-Melatih Skip-gram (Vektor=100, Window=5)...
-Melatih Skip-gram (Vektor=100, Window=7)...
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Melatih Skip-gram (Vektor=100, Window=5)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Melatih Skip-gram (Vektor=100, Window=7)...
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
@@ -1503,34 +1570,34 @@ Melatih Skip-gram (Vektor=100, Window=7)...
       <td>50</td>
       <td>3</td>
       <td>1.000000e-09</td>
-      <td>0.825</td>
+      <td>0.775</td>
     </tr>
     <tr>
       <th>1</th>
       <td>50</td>
       <td>3</td>
       <td>1.000000e-05</td>
-      <td>0.825</td>
+      <td>0.775</td>
     </tr>
     <tr>
       <th>2</th>
       <td>50</td>
-      <td>5</td>
-      <td>1.000000e-09</td>
-      <td>0.800</td>
+      <td>3</td>
+      <td>1.000000e-01</td>
+      <td>0.775</td>
     </tr>
     <tr>
       <th>3</th>
       <td>50</td>
       <td>5</td>
-      <td>1.000000e-05</td>
-      <td>0.800</td>
+      <td>1.000000e-01</td>
+      <td>0.775</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>50</td>
+      <td>75</td>
       <td>3</td>
-      <td>1.000000e-01</td>
+      <td>1.000000e-05</td>
       <td>0.775</td>
     </tr>
   </tbody>
@@ -1558,15 +1625,17 @@ Melatih Skip-gram (Vektor=100, Window=7)...
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/3e3055ef3edd33c66eaa3a8b415d359c851a3eef423c74a6ed9c366fffcd6e9c.png" src="_images/3e3055ef3edd33c66eaa3a8b415d359c851a3eef423c74a6ed9c366fffcd6e9c.png" />
+<img alt="_images/258608b6c0af3bff77b3c6f77989510656ff8ef7472391d5bc630943cf9c4a98.png" src="_images/258608b6c0af3bff77b3c6f77989510656ff8ef7472391d5bc630943cf9c4a98.png" />
 </div>
 </div>
-<p>Setelah model Skip-gram dilatih, setiap artikel diubah menjadi satu vektor rata-rata. <code class="docutils literal notranslate"><span class="pre">df_skenario_1_X</span></code> berisi fitur numerik dokumen, sedangkan <code class="docutils literal notranslate"><span class="pre">df_skenario_1_y</span></code> berisi label kategori dengan urutan baris yang sama. Pada <code class="docutils literal notranslate"><span class="pre">ukuran_vektor=50</span></code>, setiap artikel direpresentasikan oleh 50 fitur. Nilai fitur bukan lagi kata yang dapat dibaca langsung, melainkan ringkasan hasil embedding kata.</p>
 </section>
-<section id="skenario-2-mempertahankan-angka">
-<h3>Skenario 2: Mempertahankan Angka<a class="headerlink" href="#skenario-2-mempertahankan-angka" title="Link to this heading">#</a></h3>
-<p>Skenario 2 mengatur <code class="docutils literal notranslate"><span class="pre">hapus_angka=False</span></code>, sementara stopword removal dan stemming tetap aktif. Perbandingan dengan skenario 1 membantu melihat apakah informasi angka berpengaruh pada klasifikasi berita. Pastikan kedua skenario memakai data, pembagian train/test, dan pengaturan model yang sebanding agar perbedaan evaluasi dapat dikaitkan dengan preprocessing.</p>
-<p>Perlu dicatat, blok kode ini menimpa nama variabel model generik yang sama, tetapi membentuk fitur skenario 2 dari <code class="docutils literal notranslate"><span class="pre">token_skenario_2</span></code>. Nama objek dan pesan yang masih menyebut skenario 1 merupakan hal yang dapat membingungkan saat membaca output; di sini penjelasan membedakan hasil berdasarkan kolom fitur yang digunakan.</p>
+<section id="membaca-hasil-tuning-dan-heatmap">
+<h3>Membaca Hasil Tuning dan Heatmap<a class="headerlink" href="#membaca-hasil-tuning-dan-heatmap" title="Link to this heading">#</a></h3>
+<p>Tabel yang ditampilkan setelah tuning berisi lima kombinasi dengan akurasi tertinggi untuk Skenario 1. Heatmap berikut memvisualisasikan akurasi pada setiap pasangan <code class="docutils literal notranslate"><span class="pre">Vector_Size</span></code> dan <code class="docutils literal notranslate"><span class="pre">Window</span></code>, dengan <code class="docutils literal notranslate"><span class="pre">Var_Smoothing</span></code> terbaik dari tabel hasil tuning ditahan tetap. Warna dan angka di dalam sel membantu melihat pola pada grid parameter; gunakan nilai aktual hasil eksekusi saat melaporkan konfigurasi terbaik.</p>
+</section>
+<section id="skenario-2-angka-dipertahankan">
+<h3>Skenario 2: Angka Dipertahankan<a class="headerlink" href="#skenario-2-angka-dipertahankan" title="Link to this heading">#</a></h3>
+<p>Skenario 2 menggunakan angka, menghapus stopword, dan melakukan stemming. Parameter Word2Vec serta Naive Bayes dituning tersendiri untuk token skenario ini.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Skenario 2: Pertahankan Angka, Hapus Stopword, Stemming</span>
@@ -1581,7 +1650,7 @@ Melatih Skip-gram (Vektor=100, Window=7)...
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2. Memulai Preprocessing Skenario 2...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████| 200/200 [00:33&lt;00:00,  6.00it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████| 200/200 [00:30&lt;00:00,  6.56it/s]
 </pre></div>
 </div>
 </div>
@@ -1607,8 +1676,18 @@ Melatih Skip-gram (Vektor=100, Window=7)...
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Memulai Hyperparameter Tuning Skenario 2...
 Melatih Skip-gram (Vektor=50, Window=3)...
 Melatih Skip-gram (Vektor=50, Window=5)...
-Melatih Skip-gram (Vektor=50, Window=7)...
-Melatih Skip-gram (Vektor=75, Window=3)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Melatih Skip-gram (Vektor=50, Window=7)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Melatih Skip-gram (Vektor=75, Window=3)...
 Melatih Skip-gram (Vektor=75, Window=5)...
 Melatih Skip-gram (Vektor=75, Window=7)...
 Melatih Skip-gram (Vektor=100, Window=3)...
@@ -1646,45 +1725,46 @@ Melatih Skip-gram (Vektor=100, Window=7)...
     <tr>
       <th>0</th>
       <td>50</td>
-      <td>7</td>
+      <td>5</td>
       <td>1.000000e-09</td>
-      <td>0.85</td>
+      <td>0.850</td>
     </tr>
     <tr>
       <th>1</th>
       <td>50</td>
-      <td>7</td>
+      <td>5</td>
       <td>1.000000e-05</td>
-      <td>0.85</td>
+      <td>0.850</td>
     </tr>
     <tr>
       <th>2</th>
       <td>50</td>
-      <td>3</td>
+      <td>7</td>
       <td>1.000000e-09</td>
-      <td>0.80</td>
+      <td>0.825</td>
     </tr>
     <tr>
       <th>3</th>
       <td>50</td>
-      <td>5</td>
-      <td>1.000000e-01</td>
-      <td>0.80</td>
+      <td>7</td>
+      <td>1.000000e-05</td>
+      <td>0.825</td>
     </tr>
     <tr>
       <th>4</th>
       <td>50</td>
       <td>3</td>
-      <td>1.000000e-05</td>
-      <td>0.80</td>
+      <td>1.000000e-01</td>
+      <td>0.800</td>
     </tr>
   </tbody>
 </table>
 </div></div></div>
 </div>
 </section>
-<section id="skenario-3-mempertahankan-angka">
-<h3>Skenario 3: Mempertahankan Angka<a class="headerlink" href="#skenario-3-mempertahankan-angka" title="Link to this heading">#</a></h3>
+<section id="skenario-3-angka-dihapus-stopword-dipertahankan">
+<h3>Skenario 3: Angka Dihapus, Stopword Dipertahankan<a class="headerlink" href="#skenario-3-angka-dihapus-stopword-dipertahankan" title="Link to this heading">#</a></h3>
+<p>Pada skenario ini <code class="docutils literal notranslate"><span class="pre">hapus_angka=True</span></code>, <code class="docutils literal notranslate"><span class="pre">hapus_stopword=False</span></code>, dan <code class="docutils literal notranslate"><span class="pre">pakai_stemming=True</span></code>. Dibandingkan Skenario 1, angka tetap dihapus dan stemming tetap dilakukan, tetapi stopword dipertahankan. Hasil tuning skenario ini menguji apakah mempertahankan kata umum memberi pengaruh pada fitur embedding dan klasifikasi.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Skenario 3: Pertahankan Angka, Hapus Stopword, Stemming</span>
@@ -1699,7 +1779,7 @@ Melatih Skip-gram (Vektor=100, Window=7)...
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>3. Memulai Preprocessing Skenario 3...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████| 200/200 [00:01&lt;00:00, 173.61it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████| 200/200 [00:00&lt;00:00, 204.53it/s]
 </pre></div>
 </div>
 </div>
@@ -1736,154 +1816,20 @@ Melatih Skip-gram (Vektor=50, Window=3)...
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Melatih Skip-gram (Vektor=50, Window=7)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Melatih Skip-gram (Vektor=75, Window=3)...
+Melatih Skip-gram (Vektor=75, Window=3)...
 Melatih Skip-gram (Vektor=75, Window=5)...
-Melatih Skip-gram (Vektor=75, Window=7)...
-Melatih Skip-gram (Vektor=100, Window=3)...
-Melatih Skip-gram (Vektor=100, Window=5)...
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Melatih Skip-gram (Vektor=100, Window=7)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
-Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=== TOP 5 HASIL KOMBINASI TERBAIK ===
-</pre></div>
-</div>
-<div class="output text_html"><div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>Vector_Size</th>
-      <th>Window</th>
-      <th>Var_Smoothing</th>
-      <th>Akurasi</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>100</td>
-      <td>3</td>
-      <td>1.000000e-01</td>
-      <td>0.775</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>100</td>
-      <td>3</td>
-      <td>1.000000e-09</td>
-      <td>0.775</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>75</td>
-      <td>3</td>
-      <td>1.000000e-01</td>
-      <td>0.775</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>100</td>
-      <td>3</td>
-      <td>1.000000e-05</td>
-      <td>0.775</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>50</td>
-      <td>5</td>
-      <td>1.000000e-05</td>
-      <td>0.750</td>
-    </tr>
-  </tbody>
-</table>
-</div></div></div>
-</div>
-</section>
-<section id="skenario-4-mempertahankan-angka">
-<h3>Skenario 4: Mempertahankan Angka<a class="headerlink" href="#skenario-4-mempertahankan-angka" title="Link to this heading">#</a></h3>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Skenario 4: Pertahankan Angka, Hapus Stopword, Stemming</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"4. Memulai Preprocessing Skenario 4..."</span><span class="p">)</span>
-<span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_4'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_all</span><span class="p">[</span><span class="s1">'teks'</span><span class="p">]</span><span class="o">.</span><span class="n">progress_apply</span><span class="p">(</span>
-    <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">preprocess_modular</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">hapus_angka</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hapus_stopword</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pakai_stemming</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>4. Memulai Preprocessing Skenario 4...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████| 200/200 [00:00&lt;00:00, 3556.91it/s]
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"Memulai Hyperparameter Tuning Skenario 4..."</span><span class="p">)</span>
-
-<span class="n">hasil_tuning_skenario_4</span> <span class="o">=</span> <span class="n">tuning_w2v_naive_bayes</span><span class="p">(</span>
-    <span class="n">tokens_series</span><span class="o">=</span><span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_4'</span><span class="p">],</span> 
-    <span class="n">target_series</span><span class="o">=</span><span class="n">df_all</span><span class="p">[</span><span class="s1">'kategori'</span><span class="p">],</span> 
-    <span class="n">list_vektor</span><span class="o">=</span><span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>               <span class="c1"># Uji 2 parameter vector size</span>
-    <span class="n">list_window</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span>                  <span class="c1"># Uji 2 parameter window</span>
-    <span class="n">list_smoothing</span><span class="o">=</span><span class="p">[</span><span class="mf">1e-9</span><span class="p">,</span> <span class="mf">1e-5</span><span class="p">,</span> <span class="mf">1e-1</span><span class="p">]</span>    <span class="c1"># Uji 3 parameter Naive Bayes</span>
-<span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">=== TOP 5 HASIL KOMBINASI TERBAIK ==="</span><span class="p">)</span>
-<span class="n">display</span><span class="p">(</span><span class="n">hasil_tuning_skenario_4</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Memulai Hyperparameter Tuning Skenario 4...
-Melatih Skip-gram (Vektor=50, Window=3)...
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
-Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Melatih Skip-gram (Vektor=50, Window=5)...
-Melatih Skip-gram (Vektor=50, Window=7)...
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Melatih Skip-gram (Vektor=75, Window=7)...
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Melatih Skip-gram (Vektor=75, Window=3)...
-Melatih Skip-gram (Vektor=75, Window=5)...
-Melatih Skip-gram (Vektor=75, Window=7)...
-Melatih Skip-gram (Vektor=100, Window=3)...
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Melatih Skip-gram (Vektor=100, Window=3)...
 Melatih Skip-gram (Vektor=100, Window=5)...
 Melatih Skip-gram (Vektor=100, Window=7)...
 
@@ -1917,68 +1863,72 @@ Melatih Skip-gram (Vektor=100, Window=7)...
   <tbody>
     <tr>
       <th>0</th>
-      <td>75</td>
-      <td>3</td>
+      <td>50</td>
+      <td>5</td>
       <td>1.000000e-09</td>
-      <td>0.8</td>
+      <td>0.775</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>75</td>
-      <td>3</td>
+      <td>50</td>
+      <td>5</td>
       <td>1.000000e-05</td>
-      <td>0.8</td>
+      <td>0.775</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>75</td>
-      <td>5</td>
-      <td>1.000000e-09</td>
-      <td>0.8</td>
+      <td>100</td>
+      <td>3</td>
+      <td>1.000000e-01</td>
+      <td>0.775</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>100</td>
-      <td>7</td>
-      <td>1.000000e-05</td>
-      <td>0.8</td>
+      <td>50</td>
+      <td>3</td>
+      <td>1.000000e-01</td>
+      <td>0.750</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>100</td>
-      <td>7</td>
-      <td>1.000000e-09</td>
-      <td>0.8</td>
+      <td>50</td>
+      <td>3</td>
+      <td>1.000000e-05</td>
+      <td>0.750</td>
     </tr>
   </tbody>
 </table>
 </div></div></div>
 </div>
+</section>
+<section id="skenario-4-angka-dan-stopword-dihapus-tanpa-stemming">
+<h3>Skenario 4: Angka dan Stopword Dihapus, Tanpa Stemming<a class="headerlink" href="#skenario-4-angka-dan-stopword-dihapus-tanpa-stemming" title="Link to this heading">#</a></h3>
+<p>Kode menggunakan <code class="docutils literal notranslate"><span class="pre">hapus_angka=True</span></code>, <code class="docutils literal notranslate"><span class="pre">hapus_stopword=True</span></code>, dan <code class="docutils literal notranslate"><span class="pre">pakai_stemming=False</span></code>. Dengan demikian angka serta stopword dihapus, tetapi kata tidak dikembalikan ke bentuk dasar. Parameter model lalu dituning untuk konfigurasi token ini.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Skenario 5: Pertahankan Angka, Hapus Stopword, Stemming</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"5. Memulai Preprocessing Skenario 5..."</span><span class="p">)</span>
-<span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_5'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_all</span><span class="p">[</span><span class="s1">'teks'</span><span class="p">]</span><span class="o">.</span><span class="n">progress_apply</span><span class="p">(</span>
-    <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">preprocess_modular</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">hapus_angka</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">hapus_stopword</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">pakai_stemming</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Skenario 4: Pertahankan Angka, Hapus Stopword, Stemming</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"4. Memulai Preprocessing Skenario 4..."</span><span class="p">)</span>
+<span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_4'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_all</span><span class="p">[</span><span class="s1">'teks'</span><span class="p">]</span><span class="o">.</span><span class="n">progress_apply</span><span class="p">(</span>
+    <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">preprocess_modular</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">hapus_angka</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hapus_stopword</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pakai_stemming</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>5. Memulai Preprocessing Skenario 5...
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>4. Memulai Preprocessing Skenario 4...
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████| 200/200 [00:00&lt;00:00, 1463.78it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████| 200/200 [00:00&lt;00:00, 2302.90it/s]
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"Memulai Hyperparameter Tuning Skenario 5..."</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"Memulai Hyperparameter Tuning Skenario 4..."</span><span class="p">)</span>
 
-<span class="n">hasil_tuning_skenario_5</span> <span class="o">=</span> <span class="n">tuning_w2v_naive_bayes</span><span class="p">(</span>
-    <span class="n">tokens_series</span><span class="o">=</span><span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_5'</span><span class="p">],</span> 
+<span class="n">hasil_tuning_skenario_4</span> <span class="o">=</span> <span class="n">tuning_w2v_naive_bayes</span><span class="p">(</span>
+    <span class="n">tokens_series</span><span class="o">=</span><span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_4'</span><span class="p">],</span> 
     <span class="n">target_series</span><span class="o">=</span><span class="n">df_all</span><span class="p">[</span><span class="s1">'kategori'</span><span class="p">],</span> 
     <span class="n">list_vektor</span><span class="o">=</span><span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>               <span class="c1"># Uji 2 parameter vector size</span>
     <span class="n">list_window</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span>                  <span class="c1"># Uji 2 parameter window</span>
@@ -1986,20 +1936,33 @@ Melatih Skip-gram (Vektor=100, Window=7)...
 <span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">=== TOP 5 HASIL KOMBINASI TERBAIK ==="</span><span class="p">)</span>
-<span class="n">display</span><span class="p">(</span><span class="n">hasil_tuning_skenario_5</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+<span class="n">display</span><span class="p">(</span><span class="n">hasil_tuning_skenario_4</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Memulai Hyperparameter Tuning Skenario 5...
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Memulai Hyperparameter Tuning Skenario 4...
 Melatih Skip-gram (Vektor=50, Window=3)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Melatih Skip-gram (Vektor=50, Window=5)...
 Melatih Skip-gram (Vektor=50, Window=7)...
 Melatih Skip-gram (Vektor=75, Window=3)...
-Melatih Skip-gram (Vektor=75, Window=5)...
-Melatih Skip-gram (Vektor=75, Window=7)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Melatih Skip-gram (Vektor=75, Window=5)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Melatih Skip-gram (Vektor=75, Window=7)...
 Melatih Skip-gram (Vektor=100, Window=3)...
 Melatih Skip-gram (Vektor=100, Window=5)...
 </pre></div>
@@ -2040,8 +2003,137 @@ Melatih Skip-gram (Vektor=100, Window=5)...
     <tr>
       <th>0</th>
       <td>75</td>
+      <td>5</td>
+      <td>1.000000e-09</td>
+      <td>0.900</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>75</td>
+      <td>5</td>
+      <td>1.000000e-05</td>
+      <td>0.900</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>75</td>
+      <td>5</td>
+      <td>1.000000e-01</td>
+      <td>0.825</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>50</td>
+      <td>7</td>
+      <td>1.000000e-05</td>
+      <td>0.800</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>75</td>
       <td>3</td>
       <td>1.000000e-09</td>
+      <td>0.800</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="skenario-5-angka-dan-stopword-dipertahankan">
+<h3>Skenario 5: Angka dan Stopword Dipertahankan<a class="headerlink" href="#skenario-5-angka-dan-stopword-dipertahankan" title="Link to this heading">#</a></h3>
+<p>Pada konfigurasi kelima, angka serta stopword dipertahankan dan stemming tetap aktif (<code class="docutils literal notranslate"><span class="pre">hapus_angka=False</span></code>, <code class="docutils literal notranslate"><span class="pre">hapus_stopword=False</span></code>, <code class="docutils literal notranslate"><span class="pre">pakai_stemming=True</span></code>). Model kemudian dituning dengan grid parameter yang sama untuk memudahkan perbandingan hasil.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Skenario 5: Pertahankan Angka, Hapus Stopword, Stemming</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"5. Memulai Preprocessing Skenario 5..."</span><span class="p">)</span>
+<span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_5'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_all</span><span class="p">[</span><span class="s1">'teks'</span><span class="p">]</span><span class="o">.</span><span class="n">progress_apply</span><span class="p">(</span>
+    <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">preprocess_modular</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">hapus_angka</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">hapus_stopword</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">pakai_stemming</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>5. Memulai Preprocessing Skenario 5...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100%|██████████| 200/200 [00:00&lt;00:00, 1255.27it/s]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"Memulai Hyperparameter Tuning Skenario 5..."</span><span class="p">)</span>
+
+<span class="n">hasil_tuning_skenario_5</span> <span class="o">=</span> <span class="n">tuning_w2v_naive_bayes</span><span class="p">(</span>
+    <span class="n">tokens_series</span><span class="o">=</span><span class="n">df_all</span><span class="p">[</span><span class="s1">'token_skenario_5'</span><span class="p">],</span> 
+    <span class="n">target_series</span><span class="o">=</span><span class="n">df_all</span><span class="p">[</span><span class="s1">'kategori'</span><span class="p">],</span> 
+    <span class="n">list_vektor</span><span class="o">=</span><span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">75</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>               <span class="c1"># Uji 2 parameter vector size</span>
+    <span class="n">list_window</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span>                  <span class="c1"># Uji 2 parameter window</span>
+    <span class="n">list_smoothing</span><span class="o">=</span><span class="p">[</span><span class="mf">1e-9</span><span class="p">,</span> <span class="mf">1e-5</span><span class="p">,</span> <span class="mf">1e-1</span><span class="p">]</span>    <span class="c1"># Uji 3 parameter Naive Bayes</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">=== TOP 5 HASIL KOMBINASI TERBAIK ==="</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">hasil_tuning_skenario_5</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Memulai Hyperparameter Tuning Skenario 5...
+Melatih Skip-gram (Vektor=50, Window=3)...
+Melatih Skip-gram (Vektor=50, Window=5)...
+Melatih Skip-gram (Vektor=50, Window=7)...
+Melatih Skip-gram (Vektor=75, Window=3)...
+Melatih Skip-gram (Vektor=75, Window=5)...
+Melatih Skip-gram (Vektor=75, Window=7)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Melatih Skip-gram (Vektor=100, Window=3)...
+Melatih Skip-gram (Vektor=100, Window=5)...
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Exception ignored in: 'gensim.models.word2vec_inner.our_dot_float'
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Melatih Skip-gram (Vektor=100, Window=7)...
+
+=== TOP 5 HASIL KOMBINASI TERBAIK ===
+</pre></div>
+</div>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Vector_Size</th>
+      <th>Window</th>
+      <th>Var_Smoothing</th>
+      <th>Akurasi</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>50</td>
+      <td>3</td>
+      <td>1.000000e-01</td>
       <td>0.775</td>
     </tr>
     <tr>
@@ -2053,23 +2145,23 @@ Melatih Skip-gram (Vektor=100, Window=5)...
     </tr>
     <tr>
       <th>2</th>
-      <td>100</td>
+      <td>75</td>
       <td>3</td>
       <td>1.000000e-09</td>
       <td>0.775</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>100</td>
+      <td>50</td>
       <td>3</td>
       <td>1.000000e-05</td>
-      <td>0.775</td>
+      <td>0.750</td>
     </tr>
     <tr>
       <th>4</th>
       <td>50</td>
       <td>3</td>
-      <td>1.000000e-05</td>
+      <td>1.000000e-09</td>
       <td>0.750</td>
     </tr>
   </tbody>
@@ -2125,11 +2217,11 @@ Menggunakan Parameter -&gt; Vector: 50, Window: 3, Smoothing: 1e-09
 </div>
 </div>
 </div>
-<p><strong>Gaussian Naive Bayes Skenario 1.</strong> <code class="docutils literal notranslate"><span class="pre">fit</span></code> mempelajari hubungan antara 50 fitur embedding dan label kategori dari data latih, kemudian <code class="docutils literal notranslate"><span class="pre">predict</span></code> menghasilkan label untuk data uji. Gaussian Naive Bayes memperkirakan distribusi tiap fitur pada setiap kelas dan mengasumsikan fitur saling independen jika kelas diketahui. Asumsi ini menyederhanakan pemodelan; kinerjanya tetap perlu dinilai pada data uji.</p>
+<p><strong>Gaussian Naive Bayes Skenario 1.</strong> Model dilatih menggunakan fitur dokumen berdimensi <code class="docutils literal notranslate"><span class="pre">best_v1</span></code>, yaitu nilai <code class="docutils literal notranslate"><span class="pre">Vector_Size</span></code> terpilih dari tabel tuning, dan label kategori data training. <code class="docutils literal notranslate"><span class="pre">fit</span></code> mempelajari pola kelas, sedangkan <code class="docutils literal notranslate"><span class="pre">predict</span></code> memperkirakan label untuk data test. Gaussian Naive Bayes mengasumsikan distribusi Gaussian tiap fitur dalam kelas dan independensi bersyarat antarf fitur.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 3. Latih Model Naive Bayes Final</span>
-<span class="n">nb_final_s1</span> <span class="o">=</span> <span class="n">GaussianNB</span><span class="p">(</span><span class="n">var_smoothing</span><span class="o">=</span><span class="n">best_s</span><span class="p">)</span>
+<span class="n">nb_final_s1</span> <span class="o">=</span> <span class="n">GaussianNB</span><span class="p">(</span><span class="n">var_smoothing</span><span class="o">=</span><span class="n">best_s1</span><span class="p">)</span>
 <span class="n">nb_final_s1</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train_s1</span><span class="p">,</span> <span class="n">y_train_s1</span><span class="p">)</span>
 <span class="n">y_pred_final_s1</span> <span class="o">=</span> <span class="n">nb_final_s1</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test_s1</span><span class="p">)</span>
 </pre></div>
@@ -2159,20 +2251,20 @@ Menggunakan Parameter -&gt; Vector: 50, Window: 3, Smoothing: 1e-09
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=== HASIL EVALUASI NAIVE BAYES (SKENARIO 1) ===
-Akurasi Model : 85.00%
+Akurasi Model : 82.50%
 
 Laporan Klasifikasi Detail:
               precision    recall  f1-score   support
 
-     finance       0.79      0.95      0.86        20
-       sport       0.94      0.75      0.83        20
+     finance       0.74      1.00      0.85        20
+       sport       1.00      0.65      0.79        20
 
-    accuracy                           0.85        40
-   macro avg       0.86      0.85      0.85        40
-weighted avg       0.86      0.85      0.85        40
+    accuracy                           0.82        40
+   macro avg       0.87      0.82      0.82        40
+weighted avg       0.87      0.82      0.82        40
 </pre></div>
 </div>
-<img alt="_images/b06525631282b403b2d5c163ab769d998af1831c9921fe27660811b1054e24d5.png" src="_images/b06525631282b403b2d5c163ab769d998af1831c9921fe27660811b1054e24d5.png" />
+<img alt="_images/da7124c3d97c9649e44e4f485800d76afd691345c933297788aa46c38037383d.png" src="_images/da7124c3d97c9649e44e4f485800d76afd691345c933297788aa46c38037383d.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -2219,10 +2311,10 @@ Representasi Vektor (50 Dimensi):
 </div>
 </div>
 </section>
-<section id="skenario-2-angka-dipertahankan">
-<h3>Skenario 2: Angka Dipertahankan<a class="headerlink" href="#skenario-2-angka-dipertahankan" title="Link to this heading">#</a></h3>
-<p>Fitur skenario ini berasal dari preprocessing yang mempertahankan angka, sedangkan tahap lainnya tetap menghapus stopword dan melakukan stemming. Bandingkan hasilnya dengan Skenario 1 menggunakan metrik yang sama. Jangan menyimpulkan angka selalu membantu atau merugikan; pengaruhnya bergantung pada apakah angka dalam artikel membawa informasi untuk membedakan kategori.</p>
-<p><strong>Pembagian data Skenario 2.</strong> Parameter split sama dengan Skenario 1 agar perbandingan lebih adil. <code class="docutils literal notranslate"><span class="pre">stratify=df_skenario_2_y</span></code> menjaga proporsi label kategori saat dokumen dibagi menjadi data latih dan data uji.</p>
+<section id="skenario-2-angka-dipertahankan-stopword-dihapus-stemming-aktif">
+<h3>Skenario 2: Angka Dipertahankan, Stopword Dihapus, Stemming Aktif<a class="headerlink" href="#skenario-2-angka-dipertahankan-stopword-dihapus-stemming-aktif" title="Link to this heading">#</a></h3>
+<p>Skenario 2 mempertahankan angka, tetapi tetap menghapus stopword dan melakukan stemming. Setelah tuning tersendiri, notebook memilih parameter terbaik skenario ini, membentuk ulang embedding serta fitur dokumen, lalu mengevaluasi classifier. Bandingkan dengan skenario lain menggunakan metrik aktual dan perhatikan bahwa hasilnya menunjukkan eksperimen pada dataset ini saja.</p>
+<p><strong>Pembagian data Skenario 2.</strong> Fitur dokumen final dan label dibagi dengan <code class="docutils literal notranslate"><span class="pre">stratify=y_df_final_s2</span></code>, sehingga proporsi kelas dijaga. Bagian test digunakan untuk mengevaluasi classifier, tetapi embedding sebelumnya telah dilatih dengan teks seluruh korpus.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"=== PEMODELAN FINAL DENGAN PARAMETER TERBAIK ==="</span><span class="p">)</span>
@@ -2266,7 +2358,7 @@ Menggunakan Parameter -&gt; Vector: 50, Window: 7, Smoothing: 1e-09
 </div>
 </div>
 </div>
-<p><strong>Gaussian Naive Bayes Skenario 2.</strong> Classifier dilatih menggunakan <code class="docutils literal notranslate"><span class="pre">df_skenario_2_X</span></code> dan label kategori skenario 2. Tahap <code class="docutils literal notranslate"><span class="pre">fit</span></code> mempelajari pola dari data latih, sedangkan <code class="docutils literal notranslate"><span class="pre">predict</span></code> menguji prediksi pada data uji. Seperti Skenario 1, model mengasumsikan distribusi Gaussian untuk tiap fitur dalam kelas dan independensi bersyarat antarf fitur.</p>
+<p><strong>Gaussian Naive Bayes Skenario 2.</strong> Model final menggunakan <code class="docutils literal notranslate"><span class="pre">var_smoothing</span></code> terbaik dari tuning Skenario 2 dan dilatih dengan fitur hasil mean pooling serta label kategori pada bagian training. <code class="docutils literal notranslate"><span class="pre">predict</span></code> mengeluarkan prediksi label bagi data test. Dimensi fitur mengikuti <code class="docutils literal notranslate"><span class="pre">best_v2</span></code>, bukan selalu 50.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 3. Latih Model Final Skenario 2</span>
@@ -2277,7 +2369,7 @@ Menggunakan Parameter -&gt; Vector: 50, Window: 7, Smoothing: 1e-09
 </div>
 </div>
 </div>
-<p><strong>Membaca evaluasi Skenario 2.</strong> Baca accuracy bersama precision, recall, F1, dan confusion matrix. Bandingkan dengan Skenario 1 pada label serta pembagian data yang sebanding. Selisih metrik menunjukkan perbedaan pada eksperimen ini, tetapi dengan jumlah data terbatas dan embedding yang dipelajari dari korpus kecil, hasilnya belum cukup untuk menyatakan keunggulan umum salah satu preprocessing.</p>
+<p><strong>Membaca evaluasi Skenario 2.</strong> Perhatikan accuracy bersama precision, recall, F1, dan confusion matrix. Bandingkan metrik dengan skenario lain, tetapi jangan menganggap selisih kecil sebagai bukti umum bahwa mempertahankan angka selalu membantu atau merugikan. Tuning dan pembentukan embedding menggunakan korpus yang sama, sehingga interpretasi performa perlu mempertimbangkan batas evaluasi yang dijelaskan sebelumnya.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"LAPORAN KLASIFIKASI SKENARIO 2:"</span><span class="p">)</span>
@@ -2357,8 +2449,9 @@ Representasi Vektor (50 Dimensi):
 </div>
 </div>
 </section>
-<section id="skenario-3">
-<h3>Skenario 3:<a class="headerlink" href="#skenario-3" title="Link to this heading">#</a></h3>
+<section id="model-final-skenario-3">
+<h3>Model Final Skenario 3<a class="headerlink" href="#model-final-skenario-3" title="Link to this heading">#</a></h3>
+<p>Nilai <code class="docutils literal notranslate"><span class="pre">best_v3</span></code>, <code class="docutils literal notranslate"><span class="pre">best_w3</span></code>, dan <code class="docutils literal notranslate"><span class="pre">best_s3</span></code> diambil dari kombinasi dengan akurasi tuning tertinggi pada Skenario 3. Kombinasi ini digunakan untuk melatih ulang embedding dan Gaussian Naive Bayes final, lalu hasil prediksi dievaluasi pada pembagian data stratified.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"=== PEMODELAN FINAL DENGAN PARAMETER TERBAIK ==="</span><span class="p">)</span>
@@ -2494,8 +2587,9 @@ Representasi Vektor (100 Dimensi):
 </div>
 </div>
 </section>
-<section id="skenario-4">
-<h3>Skenario 4:<a class="headerlink" href="#skenario-4" title="Link to this heading">#</a></h3>
+<section id="skenario-4-stemming-tidak-digunakan">
+<h3>Skenario 4: Stemming Tidak Digunakan<a class="headerlink" href="#skenario-4-stemming-tidak-digunakan" title="Link to this heading">#</a></h3>
+<p>Skenario ini memakai <code class="docutils literal notranslate"><span class="pre">hapus_angka=True</span></code>, <code class="docutils literal notranslate"><span class="pre">hapus_stopword=True</span></code>, dan <code class="docutils literal notranslate"><span class="pre">pakai_stemming=False</span></code>. Angka serta stopword dihapus, tetapi kata berimbuhan tidak diubah ke bentuk dasar. Perbandingan dengan Skenario 1 terutama memperlihatkan pengaruh keputusan stemming dalam kombinasi preprocessing ini.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"=== PEMODELAN FINAL DENGAN PARAMETER TERBAIK ==="</span><span class="p">)</span>
@@ -2627,8 +2721,9 @@ Representasi Vektor (75 Dimensi):
 </div>
 </div>
 </section>
-<section id="skenario-5">
-<h3>Skenario 5:<a class="headerlink" href="#skenario-5" title="Link to this heading">#</a></h3>
+<section id="id2">
+<h3>Skenario 5: Angka dan Stopword Dipertahankan<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
+<p>Konfigurasi ini memakai <code class="docutils literal notranslate"><span class="pre">hapus_angka=False</span></code>, <code class="docutils literal notranslate"><span class="pre">hapus_stopword=False</span></code>, dan <code class="docutils literal notranslate"><span class="pre">pakai_stemming=True</span></code>. Angka dan stopword tetap menjadi token, sementara stemming dilakukan. Ini memungkinkan pengujian gabungan terhadap dua pilihan preprocessing tersebut; hasilnya tidak mengisolasi pengaruh satu pilihan saja dibandingkan Skenario 1.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"=== PEMODELAN FINAL DENGAN PARAMETER TERBAIK ==="</span><span class="p">)</span>
@@ -2766,9 +2861,15 @@ Representasi Vektor (75 Dimensi):
 </div>
 </div>
 </section>
+<section id="inspeksi-representasi-dokumen">
+<h3>Inspeksi Representasi Dokumen<a class="headerlink" href="#inspeksi-representasi-dokumen" title="Link to this heading">#</a></h3>
+<p>Sel inspeksi memilih dokumen pada indeks <code class="docutils literal notranslate"><span class="pre">101</span></code> (indeks Python dimulai dari nol), lalu menampilkan kategori sebenarnya, jumlah token, sampel token, bentuk vektor, dan nilai fitur embedding. Langkah ini membantu menghubungkan teks yang telah diproses dengan satu vektor dokumen yang masuk ke classifier. Vektor berdimensi <code class="docutils literal notranslate"><span class="pre">best_vN</span></code> tidak dapat dibaca sebagai daftar kata; nilainya adalah rata-rata komponen embedding dari token dokumen.</p>
 </section>
-<section id="perbandingan-semua-skenario">
-<h2>Perbandingan Semua Skenario<a class="headerlink" href="#perbandingan-semua-skenario" title="Link to this heading">#</a></h2>
+</section>
+<section id="perbandingan-lima-skenario">
+<h2><strong>Perbandingan Lima Skenario</strong><a class="headerlink" href="#perbandingan-lima-skenario" title="Link to this heading">#</a></h2>
+<p>Kode menggabungkan lima tabel tuning, menambahkan nama skenario, mengurutkan semua kombinasi berdasarkan accuracy, lalu menampilkan sepuluh baris teratas. Kolom <code class="docutils literal notranslate"><span class="pre">Vector_Size</span></code>, <code class="docutils literal notranslate"><span class="pre">Window</span></code>, dan <code class="docutils literal notranslate"><span class="pre">Var_Smoothing</span></code> menunjukkan konfigurasi tiap baris. Tabel ini berguna untuk membandingkan hasil percobaan, tetapi konfigurasi terbaik sebaiknya dipilih dengan validasi yang tidak sekaligus digunakan sebagai test akhir.</p>
+<p>Saat membaca tabel, periksa label skenario bersama konfigurasi preprocessing. Skenario 5 mempertahankan angka dan stopword, sedangkan skenario 3 menghapus angka tetapi mempertahankan stopword. Interpretasi akhir harus merujuk ke output tabel hasil eksekusi; notebook ini tidak menetapkan pemenang tanpa melihat angka tersebut.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1. Menambahkan kolom penanda pada masing-masing hasil tabel</span>
@@ -2908,12 +3009,21 @@ Representasi Vektor (75 Dimensi):
 </div></div></div>
 </div>
 </section>
-<section id="simpulan-dan-catatan-metodologis">
-<h2><strong>Simpulan dan Catatan Metodologis</strong><a class="headerlink" href="#simpulan-dan-catatan-metodologis" title="Link to this heading">#</a></h2>
-<p>Alur penerapan pada notebook ini adalah: artikel scraping dibersihkan menjadi token, token digunakan untuk mempelajari embedding kata melalui Skip-gram, vektor kata dirata-ratakan menjadi satu vektor dokumen, lalu Gaussian Naive Bayes memprediksi kategori berita. CBOW memiliki tujuan yang berlawanan dengan Skip-gram: CBOW memprediksi kata target dari kumpulan kata konteks, sementara Skip-gram memprediksi konteks dari kata target.</p>
-<p>Hasil evaluasi perlu dibaca sesuai batas eksperimennya. Korpus terdiri atas jumlah artikel yang terbatas dibandingkan korpus besar yang biasanya dibutuhkan untuk mempelajari embedding kata yang stabil. Dengan <code class="docutils literal notranslate"><span class="pre">min_count=1</span></code>, kata yang jarang ikut dipelajari meskipun konteksnya sedikit. Selain itu, mean pooling menghilangkan urutan kata dan merangkum setiap token dengan bobot rata-rata.</p>
-<p>Untuk evaluasi yang benar-benar menguji dokumen yang belum terlihat, pembagian train/test sebaiknya dilakukan sebelum melatih Word2Vec. Fit embedding pada dokumen latih saja, lalu gunakan embedding tersebut untuk membentuk fitur dokumen uji; tangani kata uji yang tidak ada dalam vocabulary secara eksplisit. Perubahan ini merupakan saran metodologis dan tidak diterapkan pada kode notebook.</p>
-<p>Saat menyusun kesimpulan tugas, laporkan angka metrik dari output aktual, sebutkan skenario preprocessing yang lebih baik pada eksperimen ini bila memang didukung oleh metrik, dan jelaskan keterbatasannya. Jangan menyamakan hasil dari korpus kecil ini dengan performa Word2Vec secara umum.</p>
+<section id="simpulan-dan-catatan-review">
+<h2><strong>Simpulan dan Catatan Review</strong><a class="headerlink" href="#simpulan-dan-catatan-review" title="Link to this heading">#</a></h2>
+<p>Pipeline pada notebook ini dimulai dari artikel scraping, preprocessing lima konfigurasi, pelatihan embedding Skip-gram, mean pooling untuk membentuk vektor dokumen, tuning <code class="docutils literal notranslate"><span class="pre">vector_size</span></code>, <code class="docutils literal notranslate"><span class="pre">window</span></code>, dan <code class="docutils literal notranslate"><span class="pre">var_smoothing</span></code>, lalu klasifikasi dengan Gaussian Naive Bayes. CBOW dijelaskan sebagai pembanding konsep, sedangkan eksperimen kode menggunakan Skip-gram.</p>
+<p>Setiap skenario menguji pilihan preprocessing yang berbeda. Gunakan tabel komparasi dan laporan evaluasi aktual untuk menyatakan konfigurasi mana yang memperoleh accuracy tertinggi pada eksperimen ini. Accuracy bukan satu-satunya ukuran: precision, recall, F1, dan confusion matrix menunjukkan jenis kesalahan serta performa per kelas. Jangan menyimpulkan angka metrik atau pemenang skenario yang tidak ditunjukkan oleh output.</p>
+<p><strong>Catatan metodologis dan saran review (tidak mengubah kode):</strong></p>
+<ul class="simple">
+<li><p>Fungsi tuning melatih Word2Vec sebelum pembagian train/test dan memilih kombinasi berdasarkan accuracy pada pembagian test yang sama. Tahap modeling final juga membentuk embedding dari seluruh korpus sebelum split. Untuk estimasi yang lebih independen, pisahkan data lebih awal, latih embedding hanya pada training, gunakan validation/cross-validation untuk tuning, dan sisihkan test akhir sampai pemilihan model selesai.</p></li>
+<li><p>Komentar pada beberapa pemanggilan tuning menyebut dua nilai untuk <code class="docutils literal notranslate"><span class="pre">vector_size</span></code> dan <code class="docutils literal notranslate"><span class="pre">window</span></code>, padahal masing-masing list berisi tiga nilai: 50, 75, 100 dan 3, 5, 7.</p></li>
+<li><p>Komentar preprocessing Skenario 3 dan 4 tidak seluruhnya sesuai dengan argumen fungsi. Tabel skenario di atas mengikuti nilai aktual <code class="docutils literal notranslate"><span class="pre">hapus_angka</span></code>, <code class="docutils literal notranslate"><span class="pre">hapus_stopword</span></code>, dan <code class="docutils literal notranslate"><span class="pre">pakai_stemming</span></code> dalam kode.</p></li>
+<li><p>Tabel komparasi memberi label Skenario 5 sebagai “Dengan Stopword dan Angka”; artinya kedua jenis token dipertahankan. Penamaan yang lebih eksplisit dapat mencegah salah baca.</p></li>
+<li><p>Pesan judul yang dicetak oleh blok komparasi menyebut Skenario 1 sampai 3, meskipun tabel yang digabungkan dan diurutkan berisi kelima skenario.</p></li>
+<li><p>Bagian ekspor model hanya menyediakan pilihan Skenario 1 dan 2, walaupun tuning dan pemodelan mencakup lima skenario.</p></li>
+<li><p>Mean pooling menghilangkan urutan kata. Korpus yang terbatas serta <code class="docutils literal notranslate"><span class="pre">min_count=1</span></code> juga dapat membuat embedding kata langka kurang stabil.</p></li>
+</ul>
+<p>Catatan ini menjelaskan batas eksperimen dan potensi penyempurnaan. Sel kode tidak diubah.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">joblib</span>
@@ -2921,6 +3031,11 @@ Representasi Vektor (75 Dimensi):
 </div>
 </div>
 </div>
+</section>
+<section id="ekspor-model-untuk-digunakan-kembali">
+<h2><strong>Ekspor Model untuk Digunakan Kembali</strong><a class="headerlink" href="#ekspor-model-untuk-digunakan-kembali" title="Link to this heading">#</a></h2>
+<p>Sel penyimpanan memilih artefak berdasarkan <code class="docutils literal notranslate"><span class="pre">pilihan_skenario</span></code>: opsi 1 menyimpan model Word2Vec lengkap, KeyedVectors, dan Gaussian Naive Bayes Skenario 1; opsi 2 menyimpan model Word2Vec dan Gaussian Naive Bayes Skenario 2. <code class="docutils literal notranslate"><span class="pre">Word2Vec.save</span></code> menyimpan model embedding, <code class="docutils literal notranslate"><span class="pre">wv.save</span></code> menyimpan vocabulary beserta vektor kata, dan <code class="docutils literal notranslate"><span class="pre">joblib.dump</span></code> menyimpan classifier.</p>
+<p>Notebook saat ini menjalankan tuning lima skenario, tetapi blok ekspor hanya menyediakan pilihan 1 atau 2. Untuk menggunakan model tersimpan pada aplikasi, preprocessing input baru harus mengikuti konfigurasi skenario yang sama dan kata input harus ditangani sesuai vocabulary embedding.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pilihan_skenario</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># Ganti angka ini jika ingin menyimpan skenario lain</span>
@@ -2929,6 +3044,8 @@ Representasi Vektor (75 Dimensi):
     <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">Menyimpan model dari Skenario 1..."</span><span class="p">)</span>
     <span class="c1"># 1. Simpan Model Skip-gram Skenario 1 (Gunakan variabel yang benar: model_w2v_final_s1)</span>
     <span class="n">model_w2v_final_s1</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">"w2v_skenario1_final.model"</span><span class="p">)</span>
+    <span class="n">model_w2v_final_s1</span><span class="o">.</span><span class="n">wv</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">"w2v_skenario1_vectors.kv"</span><span class="p">)</span>
+    
     
     <span class="c1"># 2. Simpan Model Naive Bayes Skenario 1 (Gunakan variabel yang benar: nb_final_s1)</span>
     <span class="n">joblib</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">nb_final_s1</span><span class="p">,</span> <span class="s2">"naive_bayes_skenario1.pkl"</span><span class="p">)</span>
@@ -2955,6 +3072,11 @@ Berhasil! Model Skip-gram dan Naive Bayes Skenario 1 telah disimpan.
 </div>
 </div>
 </div>
+</section>
+<section id="demo-streamlit">
+<h2><strong>Demo Streamlit</strong><a class="headerlink" href="#demo-streamlit" title="Link to this heading">#</a></h2>
+<p>Notebook menautkan aplikasi klasifikasi berita berbasis Streamlit sebagai demo terpisah dari eksperimen dan evaluasi di atas. Aplikasi tersebut dapat dicoba melalui tautan berikut; ketersediaan dan status deploy-nya perlu diperiksa langsung saat digunakan.</p>
+<p><a class="reference external" href="https://ppw-klasifikasi-berita-hwdef5dzrachrlo7v4s8zm.streamlit.app/"> Buka aplikasi klasifikasi berita di Streamlit </a></p>
 </section>
 </section>
 
@@ -3028,22 +3150,28 @@ Berhasil! Model Skip-gram dan Naive Bayes Skenario 1 telah disimpan.
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-preprocessing"><strong>Data Preprocessing</strong></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#melatih-embedding-dan-membentuk-fitur-dokumen">Melatih Embedding dan Membentuk Fitur Dokumen</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#hyperparameter-tuning-word2vec-dan-naive-bayes">Hyperparameter Tuning Word2Vec dan Naive Bayes</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-1-menghapus-angka">Skenario 1: Menghapus Angka</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-2-mempertahankan-angka">Skenario 2: Mempertahankan Angka</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-3-mempertahankan-angka">Skenario 3: Mempertahankan Angka</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-4-mempertahankan-angka">Skenario 4: Mempertahankan Angka</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#membaca-hasil-tuning-dan-heatmap">Membaca Hasil Tuning dan Heatmap</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-2-angka-dipertahankan">Skenario 2: Angka Dipertahankan</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-3-angka-dihapus-stopword-dipertahankan">Skenario 3: Angka Dihapus, Stopword Dipertahankan</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-4-angka-dan-stopword-dihapus-tanpa-stemming">Skenario 4: Angka dan Stopword Dihapus, Tanpa Stemming</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-5-angka-dan-stopword-dipertahankan">Skenario 5: Angka dan Stopword Dipertahankan</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modeling-dan-evaluasi"><strong>Modeling dan Evaluasi</strong></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Skenario 1: Menghapus Angka</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-2-angka-dipertahankan">Skenario 2: Angka Dipertahankan</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-3">Skenario 3:</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-4">Skenario 4:</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-5">Skenario 5:</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-2-angka-dipertahankan-stopword-dihapus-stemming-aktif">Skenario 2: Angka Dipertahankan, Stopword Dihapus, Stemming Aktif</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#model-final-skenario-3">Model Final Skenario 3</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#skenario-4-stemming-tidak-digunakan">Skenario 4: Stemming Tidak Digunakan</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Skenario 5: Angka dan Stopword Dipertahankan</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inspeksi-representasi-dokumen">Inspeksi Representasi Dokumen</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#perbandingan-semua-skenario">Perbandingan Semua Skenario</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simpulan-dan-catatan-metodologis"><strong>Simpulan dan Catatan Metodologis</strong></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#perbandingan-lima-skenario"><strong>Perbandingan Lima Skenario</strong></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simpulan-dan-catatan-review"><strong>Simpulan dan Catatan Review</strong></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ekspor-model-untuk-digunakan-kembali"><strong>Ekspor Model untuk Digunakan Kembali</strong></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#demo-streamlit"><strong>Demo Streamlit</strong></a></li>
 </ul>
 </li>
 </ul>
